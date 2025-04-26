@@ -1,0 +1,74 @@
+{
+  "color": [
+    {
+      "name": "start_window_background",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "operate_badge_hint",
+      "value": "#00FF00"
+    },
+    {
+      "name": "operate_badge_hint_not_enough",
+      "value": "#D3D3D3"
+    },
+    {
+      "name": "operate_edit_on",
+      "value": "#4EEE94"
+    },
+    {
+      "name": "operate_edit_off",
+      "value": "#D3D3D3"
+    },
+    {
+      "name": "text_color_edit",
+      "value": "#BEBEBE"
+    },
+    {
+      "name": "text_color_keys",
+      "value": "#1C1C1C"
+    },
+    {
+      "name": "text_color_value",
+      "value": "#696969"
+    },
+    {
+      "name": "text_color_value_error",
+      "value": "#FF0000"
+    },
+    {
+      "name": "text_color_value_note",
+      "value": "#FFA500"
+    },
+    {
+      "name": "cell_background_color_high_light",
+      "value": "#FFEBCD"
+    },
+    {
+      "name": "cell_background_color_high_light_selected",
+      "value": "#98F5FF"
+    },
+    {
+      "name": "sudoku_board_background",
+      "value": "#FFFAF0"
+    },
+    {
+      "name": "background",
+      "value": "#FFFAF0"
+    },
+    {
+      "name": "badge_remain_count",
+      "value": "#CD5C5C"
+    },
+    {
+      "name": "level_background",
+      "value": "#FDF5E6"
+    },
+    {
+      "name": "segment_select_color",
+      "value": "#1E90FF"
+    }
+
+
+  ]
+}

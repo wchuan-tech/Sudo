@@ -1,0 +1,34 @@
+puzzle：
+Z Z 3 Z Z Z Z Z A Z Z Z E Z B C
+7 Z Z Z 1 2 B Z E 5 3 Z D 0 Z Z
+5 Z Z 4 Z D Z Z F B Z Z 9 Z Z Z
+2 6 B Z 5 Z Z Z Z Z Z Z 4 7 Z Z
+0 4 Z 3 Z Z 5 Z Z Z B A Z F 9 E
+6 5 Z 8 9 F Z Z Z 3 Z C Z Z 7 Z
+Z Z 7 2 Z Z Z D Z Z Z 0 6 Z Z 5
+Z A Z 9 2 Z Z E 5 Z Z Z Z Z Z Z
+Z Z Z B Z 6 D Z 1 Z Z 3 Z C 8 4
+Z Z Z Z Z 0 Z 1 Z Z 9 Z Z 6 Z Z
+Z 8 2 Z Z Z Z 5 4 Z Z Z 0 Z 3 1
+1 C Z D B Z 3 Z Z E Z F Z A 5 Z
+Z Z Z Z Z Z 1 Z Z Z Z 5 Z Z 0 Z
+C Z Z Z D Z F Z Z 6 Z Z 8 Z Z B
+Z D Z Z 0 5 2 Z B Z Z Z Z Z F Z
+Z 3 9 Z Z 7 Z Z Z Z Z E Z 1 2 Z
+solution：
+D 1 3 F 6 9 4 7 A 0 2 8 E 5 B C
+7 9 A C 1 2 B F E 5 3 4 D 0 6 8
+5 E 8 4 A D C 0 F B 7 6 9 2 1 3
+2 6 B 0 5 3 E 8 9 C D 1 4 7 A F
+0 4 1 3 7 8 5 C 6 D B A 2 F 9 E
+6 5 D 8 9 F 0 4 2 3 E C 1 B 7 A
+E B 7 2 3 1 A D 8 9 F 0 6 4 C 5
+F A C 9 2 B 6 E 5 1 4 7 3 8 D 0
+9 7 0 B E 6 D A 1 2 5 3 F C 8 4
+3 F 4 5 8 0 7 1 C A 9 D B 6 E 2
+A 8 2 E F C 9 5 4 7 6 B 0 D 3 1
+1 C 6 D B 4 3 2 0 E 8 F 7 A 5 9
+B 2 F 6 4 E 1 3 7 8 A 5 C 9 0 D
+C 0 5 7 D A F 9 3 6 1 2 8 E 4 B
+8 D E 1 0 5 2 6 B 4 C 9 A 3 F 7
+4 3 9 A C 7 8 B D F 0 E 5 1 2 6

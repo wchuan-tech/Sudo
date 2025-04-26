@@ -1,0 +1,146 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "module description"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "description"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "label"
+    },
+    {
+      "name": "AppName",
+      "value": "猿数独"
+    },
+    {
+      "name": "AppDescribe",
+      "value": "游戏的目标是使用16进制数，用 0 到 F 的字符填满所有单元格。这样，在任何一列、一行或更小的盒子（4x4）中，数值都不会重复"
+    },
+    {
+      "name": "btn_start",
+      "value": "开始"
+    },
+    {
+      "name": "hint_count_no_enough",
+      "value": "提示次数不足！！！"
+    },
+    {
+      "name": "no_operation_can_be_undone",
+      "value": "没有输入可以撤销！！！"
+    },
+    {
+      "name": "erase_error_no_selected",
+      "value": "请选择擦除的空格"
+    },
+    {
+      "name": "erase_error_cannot_erase",
+      "value": "该空格不能擦除"
+    },
+    {
+      "name": "error_count",
+      "value": "容错:"
+    },
+    {
+      "name": "game_over_tips",
+      "value": "错误次数用完，游戏失败"
+    },
+    {
+      "name": "game_over_restart_game",
+      "value": "重新开始游戏"
+    },
+    {
+      "name": "game_over_title",
+      "value": "游戏结束"
+    },
+    {
+      "name": "game_over_return_home",
+      "value": "返回主页"
+    },
+    {
+      "name": "game_over_suc",
+      "value": "恭喜通过关卡！！！"
+    },
+    {
+      "name": "difficulty_newbie",
+      "value": "新手"
+    },
+    {
+      "name": "difficulty_easy",
+      "value": "简单"
+    },
+    {
+      "name": "difficulty_middle",
+      "value": "中等"
+    },
+    {
+      "name": "difficulty_hard",
+      "value": "困难"
+    },
+    {
+      "name": "difficulty_hell",
+      "value": "大师"
+    },
+    {
+      "name": "tip_level_unlocked",
+      "value": "当前关卡未解锁！！！"
+    },
+    {
+      "name": "toolbar_home",
+      "value": "主页"
+    },
+    {
+      "name": "toolbar_me",
+      "value": "我的"
+    },
+    {
+      "name": "toolbar_rank",
+      "value": "排行榜"
+    },
+    {
+      "name": "item_dark",
+      "value": "深夜模式"
+    },
+    {
+      "name": "message_follow_system",
+      "value": "跟随系统"
+    },
+    {
+      "name": "message_follow_system_detail",
+      "value": "开启后,将根据系统打开或关闭深色模式"
+    },
+    {
+      "name": "item_statistics",
+      "value": "战绩统计"
+    },
+    {
+      "name": "item_about",
+      "value": "关于应用"
+    },
+    {
+      "name": "tip_no_game_data",
+      "value": "没有完成当前难度的关卡"
+    },
+    {
+      "name": "rank_sort",
+      "value": "按照完成时间排序"
+    },
+    {
+      "name": "display_mode_manual_setting",
+      "value": "手动设置"
+    },
+    {
+      "name": "item_day_txt",
+      "value": "浅色模式"
+    },
+    {
+      "name": "item_night_txt",
+      "value": "深色模式"
+    }
+
+
+  ]
+}

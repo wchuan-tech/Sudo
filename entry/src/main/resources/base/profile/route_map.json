@@ -1,0 +1,28 @@
+{
+  "routerMap": [
+    {
+      "name": "PageSudoku",
+      "pageSourceFile": "src/main/ets/pages/SudokuView.ets",
+      "buildFunction": "SudokuBuilder",
+      "data": {
+        "description": "this is Sudoku View"
+      }
+    },
+    {
+      "name": "PageRank",
+      "pageSourceFile": "src/main/ets/pages/views/RankView.ets",
+      "buildFunction": "RankViewBuilder",
+      "data": {
+        "description": "this is Rank View"
+      }
+    },
+    {
+      "name": "PageDisplayModeSetting",
+      "pageSourceFile": "src/main/ets/pages/views/DisplayModeSetting.ets",
+      "buildFunction": "DisplayModeSettingBuilder",
+      "data": {
+        "description": "this is DisplayModeSetting View"
+      }
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\Melao\\.ohos\\config\\default_Sudoku_MzetnMDbEu1yngQeq3MMCW5qTm5ZjzcG-55VYq1c-AU=.cer",
+          "storePassword": "0000001B5B2617CDFA0E4F6E6DDBC83F11A6029DE3E6FF86B04B777CD0A26F009E58B1CFEA4767698A8AA5",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001BAF69F672F0F79EF85D502830646E58E270D4C3541EA2734B193FEC6847A93ECBCACBAB35297BC9",
+          "profile": "C:\\Users\\Melao\\.ohos\\config\\default_Sudoku_MzetnMDbEu1yngQeq3MMCW5qTm5ZjzcG-55VYq1c-AU=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\Melao\\.ohos\\config\\default_Sudoku_MzetnMDbEu1yngQeq3MMCW5qTm5ZjzcG-55VYq1c-AU=.p12"
+        }
+      }
+    ],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "compatibleSdkVersion": "5.0.0(12)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": true
+          }
+        }
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug",
+      },
+      {
+        "name": "release"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}
