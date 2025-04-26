@@ -18,6 +18,6 @@ python .\decrypt.py
 
 #### 截图
 
-| <img src=".\images\main.png" alt="main" style="zoom:20%;" /> | <img src=".\images\ingame.png" style="zoom:20%;" /> | <img src=".\images\game_over.png" style="zoom:20%;" /> | <img src="D:\Mess\project\DevEcoStudioProjects\Sudoku\images\mine.png" style="zoom:20%;" /> | <img src=".\images\rank.png" style="zoom:20%;" /> |
-| ------------------------------------------------------------ | --------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------- |
+| <img src=".\images\main.png" alt="main" style="zoom:20%;" /> | <img src=".\images\ingame.png" style="zoom:20%;" /> | <img src=".\images\game_over.png" style="zoom:20%;" /> | <img src=".\images\mine.png" style="zoom:20%;" /> | <img src=".\images\rank.png" style="zoom:20%;" /> |
+| ------------------------------------------------------------ | --------------------------------------------------- | ------------------------------------------------------ |---------------------------------------------------| ------------------------------------------------- |
 
