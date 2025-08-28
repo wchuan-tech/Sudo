@@ -4,6 +4,7 @@ import { DividerTmp } from "./DividerTmp"
 
 @Preview
 @Component
+// 个人中心
 export struct MineView {
 
   @State egDivider: DividerTmp = new DividerTmp(1, CommonConstants.PADDING, CommonConstants.PADDING
@@ -29,6 +30,7 @@ export struct MineView {
     }
     .width('100%')
     .height(CommonConstants.Item_Height)
+
     .onClick(() => {
       // this.pathStack.pushPath();
       this.pathStack.pushPath({name: 'PageDisplayModeSetting'})

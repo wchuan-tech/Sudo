@@ -63,6 +63,7 @@ struct Index {
     selectedBackgroundColor: $r('app.color.segment_select_color'),
     backgroundBlurStyle: BlurStyle.BACKGROUND_THICK
   })
+  
   @State
   @Watch('onTabChange')
   tabSelectedIndexes: number[] = [0]

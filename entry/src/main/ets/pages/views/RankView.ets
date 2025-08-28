@@ -12,6 +12,8 @@ export function RankViewBuilder() {
   RankView()
 }
 
+// 从本地数据库中查询已完成的游戏记录，并根据不同的难度等级进行筛选和展示。
+// 同时，提供按通关时间排序的功能，让玩家可以查看自己在不同难度下的战绩排名。
 @Preview
 @Component
 export struct RankView {

@@ -633,9 +633,7 @@ struct SudokuView {
   }
 
   undoCallback(changedPropertyName: string) {
-
     LogUtil.debug("undoCallBack this.undid : " + this.undid)
-
   }
 
   eraseCallback(changedPropertyName: string) {
@@ -700,7 +698,6 @@ struct SudokuView {
         gameOverSuc = false
         // 说明游戏未结束，直接返回
         // this.curLevelInfo.data =
-
         return
       }
     }

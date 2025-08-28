@@ -14,7 +14,7 @@ export struct LevelsView {
         gutter: { y: 20 },
         direction: GridRowDirection.Row
       }) {
-        ForEach(this.levelInfos, (value: string) => {
+        ForEach(this.levelInfos, (item: LevelInfo) => {
           GridCol() {
             Stack() {
               Image($r('app.media.star'))
