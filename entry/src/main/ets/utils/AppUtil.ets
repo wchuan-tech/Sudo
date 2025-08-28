@@ -10,6 +10,7 @@ import { common, Want } from '@kit.AbilityKit';
 /**
  * App相关工具类(使用该工具前请在UIAbility的onWindowStageCreate方法中调用AppUtil的init方法初始化)
  */
+
 export class AppUtil{
 
   private constructor() {}
@@ -27,6 +28,7 @@ export class AppUtil{
    * 初始化方法,缓存全局变量，在UIAbility的onWindowStageCreate方法中初始化该方法。
    * @param windowStage 窗口管理器
    */
+
   static init(context: common.UIAbilityContext, windowStage: window.WindowStage) {
     AppUtil.context = context;
     AppUtil.windowStage = windowStage;
@@ -36,6 +38,7 @@ export class AppUtil{
    * 获取上下文，common.UIAbilityContext
    * @returns
    */
+
   static getContext(): common.UIAbilityContext {
     if (!AppUtil.context) {
       AppUtil.context = getContext() as common.UIAbilityContext; //兜底
