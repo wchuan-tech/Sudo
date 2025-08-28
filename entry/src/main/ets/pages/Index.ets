@@ -30,6 +30,7 @@ import { emitter } from '@kit.BasicServicesKit';
 @Component
 struct Index {
   callbackId: number = 0;
+
   @Provide('navPathStack')
   pathStack: NavPathStack = new NavPathStack()
   private breakpointSystem: BreakpointSystem = new BreakpointSystem();

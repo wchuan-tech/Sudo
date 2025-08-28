@@ -6,6 +6,7 @@ export class RawUtils {
 
   static xorKey: number = 1618;
 
+  // 函数功能：调用解码函数 将.txt 文件的原始、未加密时的文本内容 解密出来
   static readRawConfigData(difficulty: string, level: number): string | null {
     let filePath = difficulty + '_data/' + level + '.txt'
     try {
@@ -20,11 +21,12 @@ export class RawUtils {
     }
 	}
 
+
+  // 解码函数
   static decryptFile(buffer: Uint8Array): string | null {
     LogUtil.debug("decryptFile " + buffer.length)
     try {
       // 4. 对每个字节进行异或解密
-
 
       // 5. 将解密后的字节数组转换为字符串
       let textDecoderOptions: util.TextDecoderOptions = {
@@ -48,6 +50,8 @@ export class RawUtils {
     }
   }
 
+
+  // 具体解码方法
   static  xorEncryptDecrypt(content: string, key: number): string {
     return content
       .split('')
