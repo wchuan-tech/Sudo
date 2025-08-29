@@ -24,12 +24,17 @@ import { MineView } from './views/MineView';
 import { Difficulty } from '../common/normal/Difficulty';
 import { common, ConfigurationConstant, EnvironmentCallback } from '@kit.AbilityKit';
 import { emitter } from '@kit.BasicServicesKit';
-
+import { BluetoothManager } from '../data/bluetooth/Manager';
+import { CommonConstants } from '../common/constants/CommonConstants';
+import { ble } from '@kit.ConnectivityKit';
+import bluetooth from '@ohos.bluetooth';
+import { promptAction } from '@kit.ArkUI'; // 导入 promptAction 用于显示对话框
 
 @Entry
 @Component
 struct Index {
   callbackId: number = 0;
+
 
   @Provide('navPathStack')
   pathStack: NavPathStack = new NavPathStack()
@@ -67,6 +72,9 @@ struct Index {
   @State
   @Watch('onTabChange')
   tabSelectedIndexes: number[] = [0]
+
+  @State isScanning: boolean = false;
+  @State foundDevices: ble.ScanResult[] = [];
 
   private context = getContext(this) as common.UIAbilityContext;
 
@@ -204,6 +212,9 @@ struct Index {
           TabContent() {
             Column() {
               this.buildHeader()
+
+              this.bluetoothItem()
+
               this.buildLevelContent()
             }
           }
@@ -260,6 +271,114 @@ struct Index {
     .backgroundColor($r('app.color.view_background'))
     .toolbarConfiguration(this.CustomToolbar())
     .hideToolBar(true)
+  }
+
+  @Builder
+  bluetoothItem() {
+    Row() {
+      // 你可以找一个合适的图标
+      Image($r('app.media.item_dark')) // 暂时借用一下深色模式的图标
+        .height('100%')
+        .padding({left: $r('app.float.column_padding_left')})
+
+      Text("蓝牙设备扫描") // 功能名称
+        .padding({left: $r('app.float.column_padding_left')})
+        .fontSize($r('app.float.description_font_size'))
+        .fontColor($r('app.color.item_name_color'))
+
+      Blank()
+
+      Image($r("app.media.item_list_more"))
+        .padding({right: CommonConstants.PADDING})
+        .height('50%')
+    }
+    .width('100%')
+    .height(CommonConstants.Item_Height)
+    .onClick(() => {
+      // 3. ==================== 在这里调用蓝牙扫描功能 ====================
+      ToastUtil.showToast("开始扫描蓝牙设备...");
+
+      BluetoothManager.getInstance().startScanning();
+      // 注意：扫描结果会打印在 Logcat/HiLog 中。
+      // 如果要跳转到新页面进行扫描和连接，可以在这里使用 this.pathStack.pushPath(...)
+    })
+
+    if (this.isScanning && this.foundDevices.length === 0) {
+      Text("正在扫描，请稍候...")
+        .margin({ top: 20 })
+        .fontColor(Color.Gray)
+    } else if (this.foundDevices.length > 0) {
+      // 如果有设备，就显示列表
+      List({ space: 10 }) {
+        ForEach(this.foundDevices, (device: ble.ScanResult) => {
+          ListItem() {
+            Text(device.deviceName ? device.deviceName : `Unknown (${device.deviceId.substring(0,8)}...)`)
+              .fontSize(16)
+              .padding(10)
+              .width('100%')
+          }
+          .backgroundColor($r('app.color.level_background'))
+          .borderRadius(8)
+        })
+      }
+      .layoutWeight(1) // 让列表占据剩余空间
+    }
+
+  }
+
+  private handleStartScan(): void {
+    // 1. 直接调用鸿蒙 API 检查蓝牙状态
+    const isEnabled = bluetooth.getState() === bluetooth.BluetoothState.STATE_ON;
+
+    if (isEnabled) {
+      // 蓝牙已开启，直接开始扫描
+      this.startScanProcedure();
+    } else {
+      // 2. 蓝牙未开启，弹出对话框引导用户
+      promptAction.showDialog({
+        title: "蓝牙未开启",
+        message: "为了发现并连接设备，数独游戏需要您开启蓝牙。",
+        buttons: [{ text: '取消', color: '#000000' }, { text: '去开启', color: '#007DFF' }]
+      }).then(result => {
+        if (result.index === 1) { // 用户点击了 "去开启"
+          // 3. 直接调用鸿蒙 API 拉起蓝牙开启授权框
+          try {
+            bluetooth.enableBluetooth();
+            ToastUtil.showToast("请在系统弹窗中允许开启蓝牙");
+
+            // 为了更好的体验，我们可以在这里监听一次状态变化
+            // 当蓝牙成功开启后，再自动开始扫描
+            const onStateChange = (state: bluetooth.BluetoothState) => {
+              if (state === bluetooth.BluetoothState.STATE_ON) {
+                // 蓝牙已开启！
+                ToastUtil.showToast("蓝牙已开启，开始扫描...");
+                this.startScanProcedure();
+                // 成功扫描后，立即注销这个一次性的监听器
+                bluetooth.off('stateChange', onStateChange);
+              }
+            };
+            bluetooth.on('stateChange', onStateChange);
+
+            // 设置一个超时，防止用户一直不操作授权框
+            setTimeout(() => {
+              bluetooth.off('stateChange', onStateChange);
+            }, 15000); // 15秒后自动取消监听
+
+          } catch(err) {
+            ToastUtil.showLong("请求开启蓝牙失败，请重试。");
+          }
+        } else {
+          ToastUtil.showToast("操作已取消");
+        }
+      });
+    }
+  }
+
+  private startScanProcedure(): void {
+    ToastUtil.showToast("开始扫描蓝牙设备...");
+    this.foundDevices = [];
+    // 启动扫描的逻辑仍然通过 Manager，因为 Manager 封装了结果处理
+    BluetoothManager.getInstance().startScanning();
   }
 
   @Builder

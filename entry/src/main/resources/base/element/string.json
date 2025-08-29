@@ -14,7 +14,7 @@
     },
     {
       "name": "AppName",
-      "value": "猿数独"
+      "value": "数独"
     },
     {
       "name": "AppDescribe",
@@ -139,8 +139,12 @@
     {
       "name": "item_night_txt",
       "value": "深色模式"
+    },
+
+
+    {
+      "name": "bluetooth_permission_reason",
+      "value": "应用需要使用蓝牙权限来发现并连接附近的设备。"
     }
-
-
   ]
 }

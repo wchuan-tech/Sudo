@@ -36,6 +36,7 @@
         ]
       }
     ],
+
     "extensionAbilities": [
       {
         "name": "EntryBackupAbility",
@@ -48,6 +49,28 @@
             "resource": "$profile:backup_config"
           }
         ],
+      }
+    ],
+    "requestPermissions": [
+      { // 第一个权限对象
+        "name": "ohos.permission.ACCESS_BLUETOOTH",
+        "reason": "$string:bluetooth_permission_reason",
+        "usedScene": {
+          "abilities": [
+            ".EntryAbility"
+          ],
+          "when": "inuse"
+        }
+      },
+      { // 第二个权限对象
+        "name": "ohos.permission.DISCOVER_BLUETOOTH",
+        "reason": "$string:bluetooth_permission_reason",
+        "usedScene": {
+          "abilities": [
+            ".EntryAbility"
+          ],
+          "when": "inuse"
+        }
       }
     ]
   }
