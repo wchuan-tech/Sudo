@@ -9,9 +9,9 @@ import RdbUtils from '../common/database/RdbUtils';
 import ColumnInfo from '../viewmodel/ColumnInfo';
 import { LogUtil } from '../utils/LogUtil';
 import { CommonConstants } from '../common/constants/CommonConstants';
-import { BusinessError, emitter } from '@kit.BasicServicesKit';
+import {  emitter } from '@kit.BasicServicesKit';
 import { BreakpointConstants } from '../common/constants/BreakpointConstants';
-
+import { BusinessError } from '@ohos.base';
 
 export default class EntryAbility extends UIAbility {
 

@@ -1,20 +1,5 @@
 {
   "app": {
-    "signingConfigs": [
-      {
-        "name": "default",
-        "type": "HarmonyOS",
-        "material": {
-          "certpath": "C:\\Users\\Gbmm\\.ohos\\config\\default_Sudoku_OJ8YM6Z0fpP1QWEGNrg3-GOl4eDrBW7hiUYZ5EgOu_Y=.cer",
-          "keyAlias": "debugKey",
-          "keyPassword": "0000001B539BE07DF1715D33F18A33795468FD14C6C162C0FC02ED002260CD745EC9FEB5281E92C9550F15",
-          "profile": "C:\\Users\\Gbmm\\.ohos\\config\\default_Sudoku_OJ8YM6Z0fpP1QWEGNrg3-GOl4eDrBW7hiUYZ5EgOu_Y=.p7b",
-          "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\Gbmm\\.ohos\\config\\default_Sudoku_OJ8YM6Z0fpP1QWEGNrg3-GOl4eDrBW7hiUYZ5EgOu_Y=.p12",
-          "storePassword": "0000001B53CF1EA43AB89117DAF3A834ED313A13E9C8B3DF9121922C93A5E93DA757BAD7454E3A71249296"
-        }
-      }
-    ],
     "products": [
       {
         "name": "default",

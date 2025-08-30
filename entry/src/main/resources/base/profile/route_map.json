@@ -9,6 +9,11 @@
       }
     },
     {
+      "name": "OnlineGamePage",
+      "pageSourceFile": "src/main/ets/pages/OnlineGamePage.ets",
+      "buildFunction": "OnlineGamePageBuilder"
+    },
+    {
       "name": "PageRank",
       "pageSourceFile": "src/main/ets/pages/views/RankView.ets",
       "buildFunction": "RankViewBuilder",

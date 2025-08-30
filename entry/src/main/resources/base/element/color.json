@@ -111,7 +111,15 @@
     {
       "name": "view_background",
       "value": "#F5F5F5"
-    }
+    },
 
+    {
+      "name": "online_grid_bg1",
+      "value": "#FFFFFFFF"
+    },
+    {
+      "name": "online_grid_bg2",
+      "value": "#FFF0F0F0"
+    }
   ]
 }
