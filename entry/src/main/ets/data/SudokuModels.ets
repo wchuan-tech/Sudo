@@ -3,4 +3,5 @@
 export interface SudokuData {
   puzzle: number[][];
   solution: number[][];
+  difficulty:string
 }

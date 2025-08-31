@@ -27,6 +27,7 @@ struct SudokuView {
   // @Consumer("NavPathStack")
   // pathStack:NavPathStack = new NavPathStack()
 
+  // 从Index导航到该页面
   @Consume('navPathStack')
   pathStack: NavPathStack
 
@@ -42,22 +43,29 @@ struct SudokuView {
   // 传递值到子组件BoardView中
   inputValue: string = "Z";
 
+  // 操作按钮
   @State operate_buttons: string[] = ["undo", "erase", "edit", "hint"]
 
-  @State values: string[] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F"]
-  @State remainCount: number[] = [16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16]
+  // 数独板数据
+  @State values: string[] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+    "A", "B", "C", "D", "E", "F"]
+  @State remainCount: number[] = [16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
+    16, 16, 16, 16, 16, 16]
 
   @State valueCountMap: Map<string, number> = new Map<string, number>();
 
   @State isPlaying: boolean = true
 
+  // 暂停/开始按钮
   @State buttonIcon:Resource = this.isPlaying ? $r('app.media.pause') : $r('app.media.play')
 
-
+  // 释放时间
   @State elapsedTime: number = 0
   @State timerId: number = 1;
 
   @State editBadgeOn: boolean = false
+
+
   @State
   editOn: boolean = false
 
@@ -65,6 +73,7 @@ struct SudokuView {
 
   @State hintClicked: boolean = false
 
+    // 撤回
   @State
   @Watch("undoCallback")
   undid:boolean = false
@@ -114,27 +123,6 @@ struct SudokuView {
   // 初始化标题栏结束端内间距
   @State paddingEnd: LengthMetrics = LengthMetrics.vp(0);
 
-  dialogControllerConfirm: CustomDialogController = new CustomDialogController({
-    builder: AlertDialog({
-      primaryTitle: '提示',
-      content: '想要重新开始该关卡吗？',
-      primaryButton: {
-        value: '否',
-        action: () => {
-          // 启动计时器
-          this.togglePlayPause()
-        },
-      },
-      secondaryButton: {
-        value: '是',
-        role: ButtonRole.ERROR,
-        action: () => {
-          this.doRestart()
-        }
-      },
-    })
-  })
-
   gameOverDialog: CustomDialogController = new CustomDialogController({
     builder: AlertDialog({
       primaryTitle: $r('app.string.game_over_title'),
@@ -156,6 +144,7 @@ struct SudokuView {
     })
   })
 
+  // 回到主页
   gameOverSucDialog: CustomDialogController = new CustomDialogController({
     builder: AlertDialog({
       primaryTitle: $r('app.string.game_over_title'),
@@ -277,6 +266,7 @@ struct SudokuView {
         })
 
 
+        // 重置当前关卡
         Button({ type: ButtonType.Circle, stateEffect: true }){
           Row() {
             Image($r('app.media.replay'))
@@ -299,6 +289,8 @@ struct SudokuView {
           this.dialogControllerConfirm.open()
         })
 
+
+
         Button({ type: ButtonType.Circle, stateEffect: true }){
           Row() {
             Image(this.buttonIcon)
@@ -316,6 +308,7 @@ struct SudokuView {
         .onClick(() => {
           this.togglePlayPause();
         });
+
 
         Text(this.difficulty)
           .id('difficulty')
@@ -405,6 +398,7 @@ struct SudokuView {
         .margin({left: $r('app.float.column_padding_left'), right: $r('app.float.column_padding_right'), top: $r('app.float.column_padding_top')})
         .enabled(this.isPlaying ? true : false)
 
+
         GridRow({
           columns: 4,
           gutter: {x: 10, y: 10},
@@ -455,6 +449,7 @@ struct SudokuView {
       this.onInit(context)
     })
 
+
   }
 
 
@@ -498,13 +493,15 @@ struct SudokuView {
     }
   }
 
-  @Builder operateBuild(operate: string) {
+  @Builder
+  operateBuild(operate: string) {
     Column() {
       if (operate === "hint") {
         Row() {
           Badge({
             count: this.hintCount,
-            style: {badgeColor: this.hintCount > 0 ? $r('app.color.operate_badge_hint') : $r('app.color.operate_badge_hint_not_enough') ,
+            style: {
+              badgeColor: this.hintCount > 0 ? $r('app.color.operate_badge_hint') : $r('app.color.operate_badge_hint_not_enough') ,
               borderWidth: 0, color:Color.White},
             position: BadgePosition.RightTop,
           }) {
@@ -543,7 +540,8 @@ struct SudokuView {
     }
   }
 
-  @Builder hpBarBuilder() {
+  @Builder
+  hpBarBuilder() {
     Text($r('app.string.error_count'))
       .fontSize($r('app.float.title_normal_size'))
     GridRow({
@@ -562,11 +560,13 @@ struct SudokuView {
   }
 
 
+  // 撤销
   clickUndoButton() {
     LogUtil.debug("click undo undid : " + this.undid)
     this.undid = true
   }
 
+  // 提示次数
   clickHintButton() {
     LogUtil.debug("click hint")
     if (this.hintCount <= 0) {
@@ -582,6 +582,7 @@ struct SudokuView {
     }
   }
 
+  // 笔记
   clickEditButton() {
     LogUtil.debug("click edit " + this.editOn)
     this.editOn = !this.editOn
@@ -590,6 +591,7 @@ struct SudokuView {
     this.editBadgeColor = this.editBadgeOn ? $r('app.color.operate_edit_on') : $r('app.color.operate_edit_off')
   }
 
+  // 擦除
   clickEraseButton() {
     LogUtil.debug("click erase")
     this.erased = true
@@ -734,6 +736,27 @@ struct SudokuView {
       LogUtil.debug("saveGameData query number : " + count + " cumulativeTime = " + result.cumulativeTime)
     })
   }
+
+  dialogControllerConfirm: CustomDialogController = new CustomDialogController({
+    builder: AlertDialog({
+      primaryTitle: '提示',
+      content: '想要重新开始该关卡吗？',
+      primaryButton: {
+        value: '否',
+        action: () => {
+          // 启动计时器
+          this.togglePlayPause()
+        },
+      },
+      secondaryButton: {
+        value: '是',
+        role: ButtonRole.ERROR,
+        action: () => {
+          this.doRestart()
+        }
+      },
+    })
+  })
 
   listenerRestart(changedPropertyName: string) {
     LogUtil.debug("listenerRestart " + this.restarted)

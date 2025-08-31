@@ -23,6 +23,7 @@ import { GameNetworkViewModel } from '../viewmodel/GameNetworkViewModel';
 import { JuheSudokuResult } from '../data/ApiService';
 import { SudokuData } from '../data/SudokuModels';
 
+
 import { Cell } from '../data/Cell';
 import { LogUtil } from '../utils/LogUtil';
 import { RawUtils } from '../utils/RawUtils';
@@ -334,13 +335,18 @@ struct Index {
     .borderRadius(12)
     .onClick(async () => {
       // 点击时，依然是调用 ViewModel 的方法来获取数据
+
+
       await this.gameViewModel.fetchOnlineSudoku(1);
       const puzzleData = this.gameViewModel.juhePuzzle;
 
+
       if (puzzleData) {
+
         const params: SudokuData = {
           puzzle: puzzleData.puzzle,
-          solution: puzzleData.solution
+          solution: puzzleData.solution,
+          difficulty: this.gameViewModel.selectedDifficulty
         };
 
         // =======================================================

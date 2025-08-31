@@ -52,8 +52,8 @@ class ApiService {
   /**
    * 从聚合数据API获取一个新的数独谜题
    */
-  async getSudokuFromJuhe(level: number): Promise<JuheSudokuResult> {
-    const url = `${this.JUHE_SUDOKU_URL}?level=${level}&key=${this.JUHE_APP_KEY}`;
+  async getSudokuFromJuhe(level: number,difficulty:string): Promise<JuheSudokuResult> {
+    const url = `${this.JUHE_SUDOKU_URL}?level=${level}&key=${this.JUHE_APP_KEY}&difficulty=${difficulty}q`;
     LogUtil.debug(`ApiService: Requesting Sudoku from Juhe: ${url}`);
 
     let httpRequest = http.createHttp();
