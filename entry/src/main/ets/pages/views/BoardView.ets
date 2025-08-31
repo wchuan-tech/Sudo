@@ -144,8 +144,18 @@ export struct BoardView {
       // if(this.selectedCellCol)
       let index = this.count * (this.selectedCellRow) + this.selectedCellCol;
       console.log("index = ", index)
-      let curCell:Cell = this.cells.get(index) as Cell
-      let correctValue = curCell._correctValue
+
+      let curCell: Cell | undefined = this.cells.get(index);
+
+      // 检查 curCell 是否真的存在，防止 undefined 错误
+      if (!curCell) {
+        LogUtil.error(`BoardView.updateValue: Cannot find cell at index ${index}. Aborting.`);
+        return; // 如果找不到单元格，直接退出函数，避免崩溃
+      }
+      // =======================================================
+
+      let correctValue = curCell._correctValue; // 现在 curCell 一定有值，这行是安全的
+
       if (curCell._locked == false) {
         LogUtil.debug("当前值不是锁定状态，可以修改")
         curCell._value = this.inputValue;

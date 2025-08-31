@@ -13,7 +13,6 @@ export class PreferencesUtil {
   private static defaultPreferenceName: string = "SP_HARMONY_UTILS_PREFERENCES"
   private static preferences: preferences.Preferences
 
-
   /**
    * 获取Preferences实例
    * @param name

@@ -64,6 +64,10 @@ struct OnlineGamePage {
   values: string[] = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
   keypadNumbers: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9];
   @State
+  private highlightedNumber: number = 0; // 0 表示没有数字被高亮
+
+
+  @State
   private errorBoard: boolean[][] = [];
 
 
@@ -224,7 +228,8 @@ struct OnlineGamePage {
   }
 
   // 绘制可交互的游戏棋盘
-  @Builder GameBoard() {
+  @Builder
+  GameBoard() {
     Stack() {
       this.buildOnlineGridLines()
       Grid() {
@@ -242,9 +247,26 @@ struct OnlineGamePage {
                 .backgroundColor((Math.floor(rowIndex / 3) + Math.floor(colIndex / 3)) % 2 === 0 ? $r('app.color.sudoku_board_background') : $r('app.color.level_background'))
                 .border({ width: this.selectedCell?.row === rowIndex && this.selectedCell?.col === colIndex ? 3 : 0, color: Color.Orange })
                 .onClick(() => {
-                  if (this.puzzle[rowIndex][colIndex] === 0 && this.isPlaying) {
+                  if (!this.isPlaying)
+                    return; // 游戏暂停时不可操作
+                  // 获取当前点击格子的值
+                  const currentValue = this.playerBoard[rowIndex][colIndex];
+
+                  if (this.puzzle[rowIndex][colIndex] === 0) {
                     this.selectedCell = { row: rowIndex, col: colIndex };
+
+                    if (currentValue !== 0) {
+                      this.highlightedNumber = currentValue;
+                    } else {
+                      // 如果点击的是一个纯空格，取消所有数字高亮
+                      this.highlightedNumber = 0;
+                    }
+                  } else {
+                    // 点击的是题目给出的初始数字
+                    this.selectedCell = null; // 取消对空格的选中框
+                    this.highlightedNumber = currentValue; // 高亮所有同类数字
                   }
+
                 })
             }
           })

@@ -72,7 +72,6 @@ export class ToastUtil {
   }
 }
 
-
 /**
  * Toast参数类
  */
