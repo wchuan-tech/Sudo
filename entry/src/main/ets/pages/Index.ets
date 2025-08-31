@@ -70,7 +70,7 @@ struct Index {
   @StorageLink('deviceHeight') deviceHeight: number = 0;
   @State message: string = 'Hello World';
   private boardSideLength = display.getDefaultDisplaySync().width - vp2px(5) * 2;
-  // private heightVp = this.getUIContext.px2vp(boardSideLength)
+
   private vp = this.boardSideLength / display.getDefaultDisplaySync().width * 100
   private marginTop = display.getDefaultDisplaySync().width * 0.25;
   highVp: number = px2vp(this.boardSideLength)
@@ -246,7 +246,6 @@ struct Index {
             }
           }
           .padding({
-            // top: $r('app.float.column_padding_top'),
             left: $r('app.float.column_padding_left'),
             right: $r('app.float.column_padding_right'),
           })
@@ -254,12 +253,10 @@ struct Index {
           .tabBar(this.TabBuilder(getContext(this).resourceManager.getStringSync($r('app.string.toolbar_home')), 0,
             $r('app.media.home')))
 
-          // .tabBar(new BottomTabBarStyle($r('app.media.home'), $r('app.string.toolbar_home')))
           TabContent() {
             MineView()
           }
           .padding({
-            // top: $r('app.float.column_padding_top'),
             left: $r('app.float.column_padding_left'),
             right: $r('app.float.column_padding_right'),
           })
@@ -276,16 +273,6 @@ struct Index {
         .onChange((index: number) => {
           LogUtil.debug("Tabs Onchange index " + index)
           this.selectedIndex = index
-          switch (index) {
-            case 0:
-              ToastUtil.showToast('主页')
-              break;
-            case 1:
-              ToastUtil.showToast('用户中心')
-              break
-            default:
-              BreakpointConstants
-          }
         })
 
       }
@@ -302,7 +289,6 @@ struct Index {
 
 
   // =================================================================
-  // 方法一：重构 onlineModeItem (功能不变，保持原样)
   // 这个方法职责很清晰：触发网络请求。
   // =================================================================
   @Builder
@@ -310,7 +296,7 @@ struct Index {
     Row() {
       Image($r('app.media.about'))
         .width(24).height(24).margin({ right: 10 })
-      Text("在线模式")
+      Text("API获取")
         .fontSize($r('app.float.description_font_size'))
         .fontColor($r('app.color.item_name_color'))
       Blank()
@@ -335,8 +321,6 @@ struct Index {
     .borderRadius(12)
     .onClick(async () => {
       // 点击时，依然是调用 ViewModel 的方法来获取数据
-
-
       await this.gameViewModel.fetchOnlineSudoku(1);
       const puzzleData = this.gameViewModel.juhePuzzle;
 
@@ -348,7 +332,6 @@ struct Index {
           solution: puzzleData.solution,
           difficulty: this.gameViewModel.selectedDifficulty
         };
-
         // =======================================================
         // ↓↓↓↓↓↓     核心修改：使用带回调的 pushPathByName      ↓↓↓↓↓↓
         // =======================================================
@@ -368,106 +351,6 @@ struct Index {
     })
   }
 
-
-  // @Builder
-  // bluetoothItem() {
-  //   Row() {
-  //     // 你可以找一个合适的图标
-  //     Image($r('app.media.item_dark')) // 暂时借用一下深色模式的图标
-  //       .height('100%')
-  //       .padding({left: $r('app.float.column_padding_left')})
-  //
-  //     Text("蓝牙设备扫描") // 功能名称
-  //       .padding({left: $r('app.float.column_padding_left')})
-  //       .fontSize($r('app.float.description_font_size'))
-  //       .fontColor($r('app.color.item_name_color'))
-  //
-  //     Blank()
-  //
-  //     Image($r("app.media.item_list_more"))
-  //       .padding({right: CommonConstants.PADDING})
-  //       .height('50%')
-  //   }
-  //   .width('100%')
-  //   .height(CommonConstants.Item_Height)
-  //   .onClick(() => {
-  //     // 3. ==================== 在这里调用蓝牙扫描功能 ====================
-  //
-  //
-  //     this.handleStartScanWithLogging();
-  //
-  //     // 注意：扫描结果会打印在 Logcat/HiLog 中。
-  //     // 如果要跳转到新页面进行扫描和连接，可以在这里使用 this.pathStack.pushPath(...)
-  //   })
-  //
-  //   if (this.isScanning && this.foundDevices.length === 0) {
-  //     Text("正在扫描，请稍候...")
-  //       .margin({ top: 20 })
-  //       .fontColor(Color.Gray)
-  //   } else if (this.foundDevices.length > 0) {
-  //     // 如果有设备，就显示列表
-  //     List({ space: 10 }) {
-  //       ForEach(this.foundDevices, (device: ble.ScanResult) => {
-  //         ListItem() {
-  //           Text(device.deviceName ? device.deviceName : `Unknown (${device.deviceId.substring(0,8)}...)`)
-  //             .fontSize(16)
-  //             .padding(10)
-  //             .width('100%')
-  //         }
-  //         .backgroundColor($r('app.color.level_background'))
-  //         .borderRadius(8)
-  //       })
-  //     }
-  //     .layoutWeight(1) // 让列表占据剩余空间
-  //   }
-  //
-  // }
-
-  // 2. ==================== 使用 async/await 改造函数 ====================
-  // private async handleStartScanWithLogging(): Promise<void> {
-  //   // 1. 检查蓝牙状态
-  //   const isEnabled = bluetooth.getState() === bluetooth.BluetoothState.STATE_ON;
-  //
-  //   if (isEnabled) {
-  //     // 蓝牙已开启，直接开始扫描
-  //     this.startScanProcedure();
-  //     return; // 结束函数
-  //   }
-  //
-  //   // 2. 蓝牙未开启，弹出对话框引导用户
-  //   try {
-  //     const dialogResult = await promptAction.showDialog({
-  //       title: "蓝牙未开启",
-  //       message: "为了发现并连接设备，数独游戏需要您开启蓝牙。",
-  //       buttons: [{ text: '取消', color: '#000000' }, { text: '去开启', color: '#007DFF' }]
-  //     });
-  //
-  //     if (dialogResult.index === 1) { // 用户点击了 "去开启"
-  //       ToastUtil.showToast("请在系统弹窗中允许开启蓝牙");
-  //
-  //       // 3. ==================== 在这里嵌入蓝牙启动功能 ====================
-  //       //    调用封装好的函数，并等待它的结果
-  //       access.enableBluetooth();
-  //       // =================================================================
-  //
-  //         // Promise resolve(true) 了，说明蓝牙已成功开启
-  //         ToastUtil.showToast("蓝牙已开启，开始扫描...");
-  //         this.startScanProcedure();
-  //       // 如果 success 是 false (虽然我们的实现里没有这种情况) 或 Promise reject 了，
-  //       // catch 块会处理
-  //     } else {
-  //       ToastUtil.showToast("操作已取消");
-  //     }
-  //   } catch (err) {
-  //     // 这个 catch 会捕获 showDialog 的失败或 requestEnableBluetooth 的 reject
-  //     ToastUtil.showLong(`操作失败: ${(err as Error).message}`);
-  //   }
-  // }
-  //
-  // private startScanProcedure(): void {
-  //   ToastUtil.showToast("开始扫描蓝牙设备...");
-  //   this.foundDevices = [];
-  // }
 
   @Builder
   buildHeader() {

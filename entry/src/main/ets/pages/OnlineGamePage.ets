@@ -157,15 +157,8 @@ struct OnlineGamePage {
           .textAlign(TextAlign.Center)
           .margin({top : 15})
 
-        Text(this.formatTime())
-          .alignRules({
-            top: { anchor: "back", align: VerticalAlign.Bottom },
-            right: { anchor: "__container__", align: HorizontalAlign.End }
-          })
-          .fontSize($r('app.float.title_normal_size'))
-          .margin({ top: $r('app.float.column_padding_top'), right: $r('app.float.column_padding_right') })
-
-
+        Text(this.formatTime()){
+        }
         .alignRules({
           top: {anchor: "back", align: VerticalAlign.Bottom},
           right:{anchor: "__container__", align: HorizontalAlign.End}
@@ -174,17 +167,6 @@ struct OnlineGamePage {
         .margin({top: $r('app.float.column_padding_top'), right: $r('app.float.column_padding_right')})
 
 
-
-
-        Row() {
-          this.hpBarBuilder()
-        }
-        .id("hp_bar")
-        .width('100%')
-        .alignRules({top:  {anchor: 'sudoku_board', align: VerticalAlign.Bottom}})
-        .margin({top: $r('app.float.column_padding_top'),
-          left: $r('app.float.column_padding_left'),
-          right: $r('app.float.column_padding_right')})
 
         // 游戏版的绘制
         Column() {
@@ -198,9 +180,24 @@ struct OnlineGamePage {
           top: { anchor: 'difficulty', align: VerticalAlign.Bottom }, // 它的顶部，对齐 difficulty 文本的底部
           middle: { anchor: '__container__', align: HorizontalAlign.Center }  // 并且它在容器内水平居中
         })
-        .margin({ top: 15 })
-        .width('90%') // 给棋盘一个合适的宽度
-        .enabled(this.isPlaying)
+        .borderRadius(5)
+        .margin({top: 15})
+        .height(px2vp(this.boardSideLength))
+        .width(px2vp(this.boardSideLength))
+        .enabled(this.isPlaying ? true : false)
+        .backgroundColor($r('app.color.sudoku_board_background'))
+
+
+        Row() {
+          this.hpBarBuilder()
+        }
+        .id("hp_bar")
+        .width('100%')
+        .alignRules({
+          top: { anchor: 'sudoku_board', align: VerticalAlign.Bottom } })
+        .margin({top: $r('app.float.column_padding_top'),
+          left: $r('app.float.column_padding_left'),
+          right: $r('app.float.column_padding_right')})
 
 
         // 填充数字的绘制
@@ -208,57 +205,18 @@ struct OnlineGamePage {
           this.NumberPad()
         }
         .id('keys')
-        .alignRules({ top: { anchor: "hp_bar", align: VerticalAlign.Bottom } }) // 它的顶部，对齐 hp_bar 的底部
-        .margin({ top: $r('app.float.column_padding_top') })
-        .width('100%')
-        .enabled(this.isPlaying)
-
-
-        // 各种操作按键  擦除 提示 笔记....
-        GridRow({
-          columns: 4,
-          gutter: { x: 10, y: 10 },
-        }) {
-          ForEach(this.operate_buttons, (operate: string) => {
-            GridCol() {
-              Button({ type: ButtonType.Capsule, stateEffect: true }) {
-                this.operateBuild(operate)
-              }
-              .width('100%')
-              .backgroundColor(Color.White) // 给按钮一个背景色
-              .onClick(() => {
-                switch (operate) {
-                  case "undo":
-                    this.clickUndoButton();
-                    break;
-                  case "erase":
-                    this.clickEraseButton();
-                    break;
-                  case "edit":
-                    this.clickEditButton();
-                    break;
-                  case "hint":
-                    this.clickHintButton();
-                    break;
-                }
-              })
-            }
-          })
-        }
-        .id('operate_button')
-        .alignRules({ top: { anchor: "keys", align: VerticalAlign.Bottom } }) // 它的顶部，对齐数字键盘的底部
-        .margin({
-          left: $r('app.float.column_padding_left'),
-          right: $r('app.float.column_padding_right'),
-          top: $r('app.float.column_padding_top')
-        })
-        .width('100%')
-        .enabled(this.isPlaying)
+        .alignRules({ top: { anchor: "hp_bar", align: VerticalAlign.Bottom } ,
+          middle: { anchor: '__container__', align: HorizontalAlign.Center }
+        }) // 它的顶部，对齐 hp_bar 的底部
+        .margin({left: $r('app.float.column_padding_left'), right: $r('app.float.column_padding_right'), top: $r('app.float.column_padding_top')})
+        .enabled(this.isPlaying ? true : false)
       } // end of RelativeContainer
       .backgroundColor($r('app.color.view_background'))
       .width('100%')
       .height('100%')
     } // end of NavDestination
+    .backgroundColor($r('app.color.view_background'))
+    .hideTitleBar(true)
     .onReady((context: NavDestinationContext) => {
       this.onInit(context)
     })
@@ -391,68 +349,6 @@ struct OnlineGamePage {
     this.playerBoard = newBoard;
   }
 
-  // 各种操作
-  // 撤销
-  clickUndoButton() {
-    LogUtil.debug("click undo undid : " + this.undid)
-    this.undid = true
-  }
-
-  // 检查答案
-  checkSolution() {
-    for (let i = 0; i < 9; i++) {
-      for (let j = 0; j < 9; j++) {
-        // 如果玩家填写的数字（非0）与答案不符
-        if (this.playerBoard[i][j] !== 0 && this.playerBoard[i][j] !== this.solution[i][j]) {
-          ToastUtil.showLong("很遗憾，有错误哦，请再检查一下！");
-          return;
-        }
-        // 如果有空格未填写
-        if (this.playerBoard[i][j] === 0) {
-          ToastUtil.showLong("谜题还没完成哦！");
-          return;
-        }
-      }
-    }
-    // 如果所有检查都通过
-    ToastUtil.showLong("恭喜你，挑战成功！");
-  }
-
-
-  // 能否提示
-  clickHintButton() {
-    LogUtil.debug("click hint")
-    if (this.hintCount <= 0) {
-      promptAction.showToast({
-        message: $r('app.string.hint_count_no_enough'),
-        duration: 2000
-      });
-    } else {
-      this.hintClicked = true
-      this.hintCount--
-      this.curLevelInfo.hintCount = this.hintCount
-      this.savaGameData()
-    }
-  }
-
-
-  // 笔记
-  clickEditButton() {
-    LogUtil.debug("click edit " + this.editOn)
-    this.editOn = !this.editOn
-    LogUtil.debug("click edit2 " + this.editOn)
-    this.editBadgeOn = !this.editBadgeOn
-    this.editBadgeColor = this.editBadgeOn ? $r('app.color.operate_edit_on') : $r('app.color.operate_edit_off')
-  }
-
-  // 擦除
-  clickEraseButton() {
-    LogUtil.debug("click erase")
-    this.erased = true
-  }
-
-
-
   // 暂停
   stopTimer() {
     clearInterval(this.timerId)
@@ -489,7 +385,8 @@ struct OnlineGamePage {
   }
 
   // 绘制生命值
-  @Builder hpBarBuilder() {
+  @Builder
+  hpBarBuilder() {
     Text($r('app.string.error_count'))
       .fontSize($r('app.float.title_normal_size'))
     GridRow({
@@ -528,55 +425,6 @@ struct OnlineGamePage {
       setTimeout(() => { this.pathStack.pop(); }, 1500);
     }
   }
-
-
-  @Builder
-operateBuild(operate: string) {
-  Column() {
-    if (operate === "hint") {
-      Row() {
-        Badge({
-          count: this.hintCount,
-          style: {
-            badgeColor: this.hintCount > 0 ? $r('app.color.operate_badge_hint') : $r('app.color.operate_badge_hint_not_enough') ,
-            borderWidth: 0, color:Color.White},
-          position: BadgePosition.RightTop,
-        }) {
-          Image($r(`app.media.${operate}`))
-            .width('30%')
-            .alignRules({top: {anchor:'__container', align: VerticalAlign.Top},
-              bottom:{anchor:"__container__", align: VerticalAlign.Bottom}})
-            .margin({top: 5, bottom: 5})
-        }
-      }
-    } else if(operate == "edit") {
-      Row() {
-        Badge({
-          value: this.editBadgeOn ? 'ON' : 'OFF',
-          style: {badgeColor: this.editBadgeColor, borderWidth: 0, color:Color.White},
-          position: BadgePosition.RightTop,
-        }) {
-          Image($r(`app.media.${operate}`))
-            .width('30%')
-            .alignRules({top: {anchor:'__container', align: VerticalAlign.Top},
-              bottom:{anchor:"__container__", align: VerticalAlign.Bottom}})
-            .margin({top: 5, bottom: 5})
-        }
-        .borderWidth(0)
-
-      }
-    }else {
-      Row() {
-        Image($r(`app.media.${operate}`))
-          .width('30%')
-          .alignRules({top: {anchor:'__container', align: VerticalAlign.Top},
-            bottom:{anchor:"__container__", align: VerticalAlign.Bottom}})
-          .margin({top: 5, bottom: 5})
-      }
-    }
-  }
-}
-
 
   // 回到主页
   gameOverSucDialog: CustomDialogController = new CustomDialogController({

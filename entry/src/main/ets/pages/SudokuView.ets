@@ -333,7 +333,6 @@ struct SudokuView {
           .margin({top : 15})
 
         Text(this.formatTime()) {
-
         }
         .alignRules({
           top: {anchor: "back", align: VerticalAlign.Bottom},
@@ -394,14 +393,19 @@ struct SudokuView {
           })
         }
         .id('keys')
-        .alignRules({top: {anchor: "hp_bar", align: VerticalAlign.Bottom}})
+        .alignRules({top: {anchor: "hp_bar", align: VerticalAlign.Bottom},
+          middle: { anchor: '__container__', align: HorizontalAlign.Center }
+        })
         .margin({left: $r('app.float.column_padding_left'), right: $r('app.float.column_padding_right'), top: $r('app.float.column_padding_top')})
         .enabled(this.isPlaying ? true : false)
 
 
+        // 各种操作按键  擦除 提示 笔记....
         GridRow({
           columns: 4,
-          gutter: {x: 10, y: 10},
+          gutter: {
+            x: 10,
+            y: 10},
           direction: GridRowDirection.Row
         }) {
           ForEach(this.operate_buttons, (operate: string) => {
@@ -415,7 +419,7 @@ struct SudokuView {
               .buttonStyle(ButtonStyleMode.NORMAL)
               .width('100%')
               .clickEffect({level:ClickEffectLevel.LIGHT})
-              .onClick((event) => {
+              .onClick(() => {
                 switch (operate) {
                   case "undo":
                     this.clickUndoButton()
@@ -436,7 +440,10 @@ struct SudokuView {
         }
         .id('operate_button')
         .alignRules({top: {anchor: "keys", align: VerticalAlign.Bottom}})
-        .margin({left: $r('app.float.column_padding_left'), right: $r('app.float.column_padding_right'), top: $r('app.float.column_padding_top')})
+        .margin({
+          left: $r('app.float.column_padding_left'),
+          right: $r('app.float.column_padding_right'),
+          top: $r('app.float.column_padding_top')})
         .enabled(this.isPlaying ? true : false)
       }
       .backgroundColor($r('app.color.view_background'))
