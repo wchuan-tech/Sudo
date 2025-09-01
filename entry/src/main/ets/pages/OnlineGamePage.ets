@@ -3,7 +3,7 @@ import { LevelInfo } from '../data/Levelnfo';
 import { LogUtil } from '../utils/LogUtil';
 import LevelInfoApi from '../common/database/LevelInfoApi';
 import { AlertDialog, display,promptAction } from '@kit.ArkUI';
-
+import { gameRecordRepository } from '../common/database/GameRecordRepository';
 
 interface CellPosition {
   row: number;
@@ -103,6 +103,8 @@ struct OnlineGamePage {
   @State private playerBoard: number[][] = [];
   // 记录当前选中的单元格
   @State private selectedCell: CellPosition | null = null;
+
+  @State private finalBestTimeMessage: string = "正在计算...";
 
   build() {
     NavDestination(){
@@ -365,6 +367,10 @@ struct OnlineGamePage {
 
     // 3. 将 @State 变量指向这个全新的副本
     this.playerBoard = newBoard;
+
+    // 【核心修改】在这里调用胜利检查
+    // 在棋盘更新后，立即检查游戏是否已经结束
+    this.checkWinAndSaveRecord();
   }
 
   // 暂停
@@ -466,6 +472,85 @@ struct OnlineGamePage {
     this.pathStack.pop(this.curLevelInfo, true)
   }
 
+
+  // 【新增方法 1】检查数独是否已正确完成
+  private isSudokuComplete(): boolean {
+    for (let r = 0; r < 9; r++) {
+      for (let c = 0; c < 9; c++) {
+        // 只要有一个格子是 0（空格），或者与答案不符，就说明未完成
+        if (this.playerBoard[r][c] === 0 || this.playerBoard[r][c] !== this.solution[r][c]) {
+          return false;
+        }
+      }
+    }
+    return true; // 所有格子都已填对
+  }
+
+  // 1. 【修改】重构 gameOverSucDialog，使其能够显示动态内容
+  //    我们不再将它定义为类属性，而是在需要时动态创建
+  private showGameOverDialog() {
+    // 2. 【核心】使用 promptAction.showToast
+    promptAction.showToast({
+      // 3. 将我们准备好的动态消息作为 message
+      message: this.finalBestTimeMessage,
+      // 4. 设置一个较长的持续时间，以便用户能看清多行信息
+    })
+
+    // 5. Toast 显示后，可以延迟一小段时间再返回主菜单
+    setTimeout(() => {
+      this.backToMainView();
+    }, 3500); // 3.5秒后返回 (与 LONG duration 匹配)
+  }
+
+  private async checkWinAndSaveRecord() {
+    if (!this.isPlaying || !this.isSudokuComplete()) {
+      return;
+    }
+
+    // --- 游戏胜利 ---
+    LogUtil.info("Game Won!");
+
+    this.stopTimer();
+    this.isPlaying = false;
+
+    const finalTime = this.cumulativeTime;
+    const finalDifficulty = this.difficulty;
+
+    LogUtil.info(`Final time for difficulty '${finalDifficulty}': ${finalTime}s`);
+
+    try {
+      // 3. 【第一步：更新数据库】
+      //    调用 repository 的方法，等待它完成
+      await gameRecordRepository.updateBestTimeIfNeeded(finalDifficulty, finalTime);
+      LogUtil.info("Record update process completed.");
+
+      // 4. 【第二步：重新读取以验证】
+      //    再次从数据库中查询刚刚更新的难度的记录
+      const updatedRecord = await gameRecordRepository.getRecordByDifficulty(finalDifficulty);
+
+      // 5. 【准备弹窗内容】
+      if (updatedRecord) {
+        const bestTime = updatedRecord.bestTime;
+        // 比较本次用时和数据库中的最佳时间，给出不同提示
+        if (finalTime <= bestTime) {
+          this.finalBestTimeMessage = `恭喜！您创造了新的纪录！\n\n难度: ${finalDifficulty}\n本次用时: ${finalTime}秒\n最佳纪录: ${bestTime}秒`;
+        } else {
+          this.finalBestTimeMessage = `恭喜您完成挑战！\n\n难度: ${finalDifficulty}\n本次用时: ${finalTime}秒\n最佳纪录: ${bestTime}秒`;
+        }
+      } else {
+        // 这种情况理论上不会发生，因为 updateBestTimeIfNeeded 会确保记录存在
+        this.finalBestTimeMessage = `恭喜完成！用时: ${finalTime}秒`;
+      }
+
+    } catch (error) {
+      LogUtil.error("Failed to save or read the record:", error);
+      this.finalBestTimeMessage = "完成！但保存或读取记录时发生错误。";
+    }
+
+    // 6. 【显示弹窗】
+    //    此时 this.finalBestTimeMessage 已经有了包含了真实数据库数据的内容
+    this.showGameOverDialog();
+  }
 
   savaGameData() {
     // PreferencesUtil.putSync("ErrorCount", this.errorCount)

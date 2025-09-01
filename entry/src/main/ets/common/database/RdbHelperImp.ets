@@ -110,6 +110,9 @@ export class RdbHelperImp implements RdbHelper {
     )
   `;
 
+    store.executeSql(SQL_CREATE_GAME_RECORDS_TABLE);
+    
+
     // 从当前版本开始，逐级升级到目标版本
     if (currentVersion < 1) { // 对应文档中的 version === 0
         LogUtil.info('Upgrading from version 0 to 1: Creating initial tables.');
