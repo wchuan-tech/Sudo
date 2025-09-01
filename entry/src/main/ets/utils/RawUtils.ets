@@ -27,7 +27,6 @@ export class RawUtils {
     LogUtil.debug("decryptFile " + buffer.length)
     try {
       // 4. 对每个字节进行异或解密
-
       // 5. 将解密后的字节数组转换为字符串
       let textDecoderOptions: util.TextDecoderOptions = {
         fatal: false,

@@ -10,8 +10,8 @@ import ColumnInfo from '../viewmodel/ColumnInfo';
 import { LogUtil } from '../utils/LogUtil';
 import { CommonConstants } from '../common/constants/CommonConstants';
 import {  emitter } from '@kit.BasicServicesKit';
-import { BreakpointConstants } from '../common/constants/BreakpointConstants';
-import { BusinessError } from '@ohos.base';
+import { GlobalContext } from '../common/constants/GlobalContext';
+import { rdbHelper } from '../common/database/RdbHelperImp';
 
 export default class EntryAbility extends UIAbility {
 
@@ -25,7 +25,18 @@ export default class EntryAbility extends UIAbility {
   // private darkModeListener: mediaquery.MediaQueryListener = mediaquery.matchMediaSync(BreakpointConstants.DARK_MODE);
   private darkModeListener: mediaquery.MediaQueryListener = mediaquery.matchMediaSync('(dark-mode: true)');
 
-  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
+  async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
+
+    GlobalContext.setContext(this.context);
+
+    try {
+      // 调用我们 RdbHelper 的总开关，并等待它完成
+      await rdbHelper.initialize();
+      LogUtil.info('Database has been successfully initialized in EntryAbility.');
+    } catch (error) {
+      LogUtil.error('FATAL: Database initialization failed in EntryAbility.', error);
+      // 在生产环境中，这里可能需要记录严重错误或向用户显示一个无法继续的提示
+    }
 
     this.initDataBase()
 

@@ -9,11 +9,6 @@
       }
     },
     {
-      "name": "OnlineGamePage",
-      "pageSourceFile": "src/main/ets/pages/OnlineGamePage.ets",
-      "buildFunction": "OnlineGamePageBuilder"
-    },
-    {
       "name": "PageRank",
       "pageSourceFile": "src/main/ets/pages/views/RankView.ets",
       "buildFunction": "RankViewBuilder",
@@ -28,6 +23,16 @@
       "data": {
         "description": "this is DisplayModeSetting View"
       }
+    },
+    {
+      "name": "OnlineGamePage",
+      "pageSourceFile": "src/main/ets/pages/OnlineGamePage.ets",
+      "buildFunction": "OnlineGamePageBuilder"
+    },
+    {
+      "name": "BluetoothPage",
+      "pageSourceFile": "src/main/ets/pages/BluetoothPage.ets",
+      "buildFunction": "BluetoothPageBuilder"
     }
   ]
 }

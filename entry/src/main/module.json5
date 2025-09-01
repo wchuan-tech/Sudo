@@ -56,18 +56,18 @@
 
 
     "requestPermissions": [
-      { // 第一个权限对象
+      {
+        "name": "ohos.permission.INTERNET",
+      },
+      {
         "name": "ohos.permission.ACCESS_BLUETOOTH",
         "reason": "$string:bluetooth_permission_reason",
         "usedScene": {
           "abilities": [
             ".EntryAbility"
           ],
-          "when": "always"
+          "when": "inuse"
         }
-      },
-      {
-        "name": "ohos.permission.INTERNET",
       },
       { // 第二个权限对象
         "name": "ohos.permission.DISCOVER_BLUETOOTH",
@@ -77,15 +77,16 @@
           "name": "ohos.permission.USE_BLUETOOTH"
         },
         {
-          "name": "ohos.permission.LOCATION",
+          "name": "ohos.permission.APPROXIMATELY_LOCATION",
           "reason": "$string:location_permission_reason",
           "usedScene": {
             "abilities": [
               ".EntryAbility"
             ],
-            "when": "always"
+            "when": "inuse"
           }
-        }
+        },
+
     ],
 
   },

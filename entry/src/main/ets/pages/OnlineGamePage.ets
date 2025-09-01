@@ -1,13 +1,9 @@
-import { common } from '@kit.AbilityKit';
-import { ToastUtil } from '../utils/ToastUtil';
 import { SudokuData } from '../data/SudokuModels';
 import { LevelInfo } from '../data/Levelnfo';
 import { LogUtil } from '../utils/LogUtil';
 import LevelInfoApi from '../common/database/LevelInfoApi';
-import { DataUtil } from '../utils/DataUtil';
-import { AlertDialog, ButtonOptions, display, LengthMetrics, promptAction, router } from '@kit.ArkUI';
-import { BoardView } from './views/BoardView';
-import { Cell } from '../data/Cell';
+import { AlertDialog, display,promptAction } from '@kit.ArkUI';
+
 
 interface CellPosition {
   row: number;

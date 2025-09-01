@@ -1,4 +1,3 @@
-import { List } from "@kit.ArkTS"
 import { LevelInfo } from "../../data/Levelnfo"
 
 @Component

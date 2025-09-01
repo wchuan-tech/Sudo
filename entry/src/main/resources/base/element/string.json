@@ -148,7 +148,7 @@
     },
     {
       "name": "location_permission_reason",
-      "value": "Location"
+      "value": "需要获取精准位置以提供导航服务"
     }
   ]
 }

@@ -1,6 +1,4 @@
 import { LengthMetrics } from "@kit.ArkUI"
-import { BreakpointConstants } from "../../common/constants/BreakpointConstants";
-import { GridConstants } from "../../common/constants/GridConstants";
 import { StyleConstants } from "../../common/constants/StyleConstants";
 
 @Component

@@ -20,7 +20,6 @@ import { connection } from '@kit.ConnectivityKit';
 
 // api接口使用
 import { GameNetworkViewModel } from '../viewmodel/GameNetworkViewModel';
-import { JuheSudokuResult } from '../data/ApiService';
 import { SudokuData } from '../data/SudokuModels';
 
 
@@ -38,16 +37,13 @@ import { BreakpointConstants } from '../common/constants/BreakpointConstants';
 import { BreakpointSystem } from '../utils/BreakpointSystem';
 import { MineView } from './views/MineView';
 import { Difficulty } from '../common/normal/Difficulty';
-import { common, ConfigurationConstant, EnvironmentCallback } from '@kit.AbilityKit';
+import { abilityAccessCtrl, common, ConfigurationConstant, EnvironmentCallback } from '@kit.AbilityKit';
 import { emitter } from '@kit.BasicServicesKit';
 import { CommonConstants } from '../common/constants/CommonConstants';
 
 import { promptAction } from '@kit.ArkUI'; // 导入 promptAction 用于显示对话框
 
 
-
-
-import { BusinessError } from '@ohos.base';
 
 interface PuzzleDisplayParam {
   puzzle: number[][];
@@ -159,6 +155,127 @@ struct Index {
     })
   }
 
+  build() {
+    Navigation(this.pathStack) {
+      Column({ space: 4 }) {
+        Tabs({ barPosition: BarPosition.End, index: 0, controller: this.controller }) {
+          TabContent() {
+            Column() {
+
+              this.buildHeader()
+
+              this.bluetoothEntryItem();
+
+              // this.bluetoothItem()
+              this.onlineModeItem();
+
+              this.buildLevelContent()
+            }
+          }
+          .padding({
+            left: $r('app.float.column_padding_left'),
+            right: $r('app.float.column_padding_right'),
+          })
+          .height(StyleConstants.FULL_HEIGHT)
+          .tabBar(this.TabBuilder(getContext(this).resourceManager.getStringSync($r('app.string.toolbar_home')), 0,
+            $r('app.media.home')))
+
+          TabContent() {
+            MineView()
+          }
+          .padding({
+            left: $r('app.float.column_padding_left'),
+            right: $r('app.float.column_padding_right'),
+          })
+          .height(StyleConstants.FULL_HEIGHT)
+          .tabBar(this.TabBuilder(getContext(this).resourceManager.getStringSync($r('app.string.toolbar_me')), 1,
+            $r('app.media.me')))
+        }
+        .vertical(false)
+        .height(StyleConstants.FULL_HEIGHT)
+        .width(StyleConstants.FULL_WIDTH)
+        // .barBackgroundColor($r('app.color.toolbar_background_color'))
+        .fadingEdge(true)
+        .barOverlap(true)
+        .onChange((index: number) => {
+          LogUtil.debug("Tabs Onchange index " + index)
+          this.selectedIndex = index
+        })
+
+      }
+      .height(StyleConstants.FULL_HEIGHT)
+    }
+    .mode(NavigationMode.Stack)
+    .height(StyleConstants.FULL_HEIGHT)
+    .hideTitleBar(true)
+    .hideToolBar(true)
+    .backgroundColor($r('app.color.view_background'))
+    .toolbarConfiguration(this.CustomToolbar())
+    .hideToolBar(true)
+  }
+
+  @Builder
+  bluetoothEntryItem() {
+    Row() {
+      // 1. 蓝牙图标 (请确保您在 media 目录下有 bluetooth.png 或类似的图标)
+      Image($r('app.media.bluetooth'))
+        .width(24).height(24).margin({ right: 10 })
+        .fillColor($r('app.color.bar_selected_color')) // 让图标使用主题色
+
+      // 2. 功能名称
+      Text("蓝牙") // 您可以修改为您想要的功能名称
+        .fontSize($r('app.float.description_font_size'))
+        .fontColor($r('app.color.item_name_color'))
+
+      Blank() // 占位符，将右侧箭头推到最右边
+
+      // 3. 右侧的 "更多" 箭头图标
+      Image($r("app.media.edit")) // 假设您有一个向右的箭头图标
+        .width(16).height(16)
+        .fillColor($r('app.color.item_name_color'))
+    }
+    .width('100%')
+    .height(CommonConstants.Item_Height)
+    .padding({
+      left: CommonConstants.PADDING,
+      right: CommonConstants.PADDING
+    })
+    .backgroundColor($r('app.color.level_background'))
+    .borderRadius(12)
+    .margin({ top: 10 }) // 与上方的 "在线模式" 按钮之间增加一些间距
+    .onClick(async () => {
+      // 4. 点击事件：功能暂未实现，只弹出一个提示
+      try {
+        // 1. 获取应用上下文
+        const context = getContext(this) as common.UIAbilityContext;
+        const atManager = abilityAccessCtrl.createAtManager();
+
+        // 2. 请求权限
+        const result = await atManager.requestPermissionsFromUser(context,
+          [
+            'ohos.permission.ACCESS_BLUETOOTH',
+            'ohos.permission.DISCOVER_BLUETOOTH',
+            'ohos.permission.APPROXIMATELY_LOCATION']
+        );
+
+        // 3. 检查权限结果
+        const allGranted = result.authResults.every(auth => auth === 0);
+
+        if (allGranted) {
+          // 权限全部获取成功，跳转到蓝牙页面
+          promptAction.showToast({ message: "权限获取成功" });
+          this.pathStack.pushPathByName("BluetoothPage", null);
+        } else {
+          // 有权限被拒绝
+          promptAction.showToast({ message: "需要蓝牙和定位权限才能进行对战" });
+        }
+      } catch (err) {
+        LogUtil.error("Request permissions failed.", err);
+      }
+    })
+  }
+
+
   @Builder
   NavigationMenus() {
     Row() {
@@ -172,6 +289,7 @@ struct Index {
 
     }
   }
+
 
   @Builder
   CustomToolbar() {
@@ -231,61 +349,6 @@ struct Index {
     .justifyContent(FlexAlign.Center)
   }
 
-  build() {
-    Navigation(this.pathStack) {
-      Column({ space: 4 }) {
-        Tabs({ barPosition: BarPosition.End, index: 0, controller: this.controller }) {
-          TabContent() {
-            Column() {
-              this.buildHeader()
-
-              // this.bluetoothItem()
-              this.onlineModeItem();
-
-              this.buildLevelContent()
-            }
-          }
-          .padding({
-            left: $r('app.float.column_padding_left'),
-            right: $r('app.float.column_padding_right'),
-          })
-          .height(StyleConstants.FULL_HEIGHT)
-          .tabBar(this.TabBuilder(getContext(this).resourceManager.getStringSync($r('app.string.toolbar_home')), 0,
-            $r('app.media.home')))
-
-          TabContent() {
-            MineView()
-          }
-          .padding({
-            left: $r('app.float.column_padding_left'),
-            right: $r('app.float.column_padding_right'),
-          })
-          .height(StyleConstants.FULL_HEIGHT)
-          .tabBar(this.TabBuilder(getContext(this).resourceManager.getStringSync($r('app.string.toolbar_me')), 1,
-            $r('app.media.me')))
-        }
-        .vertical(false)
-        .height(StyleConstants.FULL_HEIGHT)
-        .width(StyleConstants.FULL_WIDTH)
-        // .barBackgroundColor($r('app.color.toolbar_background_color'))
-        .fadingEdge(true)
-        .barOverlap(true)
-        .onChange((index: number) => {
-          LogUtil.debug("Tabs Onchange index " + index)
-          this.selectedIndex = index
-        })
-
-      }
-      .height(StyleConstants.FULL_HEIGHT)
-    }
-    .mode(NavigationMode.Stack)
-    .height(StyleConstants.FULL_HEIGHT)
-    .hideTitleBar(true)
-    .hideToolBar(true)
-    .backgroundColor($r('app.color.view_background'))
-    .toolbarConfiguration(this.CustomToolbar())
-    .hideToolBar(true)
-  }
 
 
   // =================================================================
@@ -447,8 +510,6 @@ struct Index {
         data = DataUtil.map2JsonString<number, Cell>(gameDataMap);
         LogUtil.debug("init Map data = " + data)
         info.data = data
-        // LogUtil.debug("puzzle\n" + puzzle)
-        // LogUtil.debug("solution\n" + solution)
       }
     } else {
       data = info.data
@@ -524,7 +585,6 @@ struct Index {
       let mode = config.colorMode;
       LogUtil.debug('envCallback onConfigurationUpdated mode = ' + config.colorMode)
       if (mode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK) {
-        // emitter.emit("colorModeChange")//发送消息模式改变
         //深色模式
         LogUtil.debug("深色模式")
         // getContext(this).getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_DARK)

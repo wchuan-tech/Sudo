@@ -13,6 +13,7 @@ export class GameNetworkViewModel {
   // 难度
   private readonly difficultyLevels: string[] = ["easy", "normal", "hard", "veryhard"];
 
+
   // 方法：用于获取在线数独
   async fetchOnlineSudoku(level: number) {
     this.isLoading = true;
