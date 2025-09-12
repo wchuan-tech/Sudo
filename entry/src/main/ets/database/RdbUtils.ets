@@ -1,11 +1,15 @@
 import { relationalStore } from '@kit.ArkData';
-import ColumnInfo from '../../viewmodel/ColumnInfo';
+import ColumnInfo from '../data/ColumnInfo';
 import { RdbHelper } from './RdbHelper';
 import { RdbHelperImp } from './RdbHelperImp';
-import { LogUtil } from '../../utils/LogUtil';
+import { LogUtil } from '../utils/LogUtil';
+
+import { DB_CONFIG, TBL_GAME_RECORDS, TBL_LEVEL_INFO
+  ,TBL_LEVEL} from '../common/constants/DatabaseConstants';
+
 
 let dbContext: Context;
-let mDatabaseName: string = '';
+let mDatabaseName: string = DB_CONFIG.DB_NAME;
 
 export class RdbUtils {
   private rdbHelpers = new Map<string, RdbHelper>();

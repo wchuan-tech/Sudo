@@ -4,7 +4,7 @@
       {
         "name": "default",
         "signingConfig": "default",
-        "compatibleSdkVersion": "5.0.0(12)",
+        "compatibleSdkVersion": "5.0.5(17)",
         "runtimeOS": "HarmonyOS",
         "buildOption": {
           "strictMode": {
@@ -16,10 +16,22 @@
     ],
     "buildModeSet": [
       {
-        "name": "debug",
-      },
-      {
         "name": "release"
+      }
+    ],
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "D:/harmony/项目证书/Sudo.cer",
+          "storePassword": "000000183D0B39AEA69B2A16981458858FA7362347D1B389F96A57B4A4EA33641A2CF949288B6031",
+          "keyAlias": "Sudo",
+          "keyPassword": "000000180650B92C9FA84C35A3E78D9C5956681B69E2252DF73A75B62BD142D95C90B75699F19822",
+          "profile": "D:/harmony/项目证书/SudoRelease.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "D:/harmony/项目证书/Sudo.p12"
+        }
       }
     ]
   },

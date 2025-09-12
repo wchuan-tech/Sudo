@@ -12,7 +12,8 @@ struct BluetoothPage {
   @Consume('navPathStack')
   pathStack: NavPathStack;
 
-  @State private viewModel: BluetoothViewModel = new BluetoothViewModel();
+  @State
+  private viewModel: BluetoothViewModel = new BluetoothViewModel();
 
   // 页面出现时，自动开始扫描
   aboutToAppear() {

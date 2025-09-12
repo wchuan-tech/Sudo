@@ -9,7 +9,7 @@ import { preferences } from '@kit.ArkData';
 import { PreferencesUtil } from '../utils/PreferencesUtil';
 import { RawUtils } from '../utils/RawUtils';
 import { LevelInfo } from '../data/Levelnfo';
-import LevelInfoApi from '../common/database/LevelInfoApi';
+import LevelInfoApi from '../database/LevelInfoApi';
 import { GridConstants } from '../common/constants/GridConstants';
 import { StyleConstants } from '../common/constants/StyleConstants';
 import { Difficulty } from '../common/normal/Difficulty';

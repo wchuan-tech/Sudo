@@ -4,8 +4,7 @@ import { relationalStore } from '@kit.ArkData';
 import type { ValuesBucket } from '@kit.ArkData';
 import { rdbHelper } from './RdbHelperImp';
 import { GameRecord } from './GameRecord';
-import { BusinessError } from '@kit.BasicServicesKit';
-import { LogUtil } from '../../utils/LogUtil'; // 假设您有 LogUtil
+import { LogUtil } from '../utils/LogUtil'; // 假设您有 LogUtil
 
 const TABLE_NAME = 'game_records';
 

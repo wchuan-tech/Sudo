@@ -29,7 +29,7 @@ import { RawUtils } from '../utils/RawUtils';
 import { DataUtil } from '../utils/DataUtil';
 import { LevelInfo } from '../data/Levelnfo';
 import { ToastUtil } from '../utils/ToastUtil';
-import LevelInfoApi from '../common/database/LevelInfoApi';
+import LevelInfoApi from '../database/LevelInfoApi';
 import { GridConstants } from '../common/constants/GridConstants';
 import { StyleConstants } from '../common/constants/StyleConstants';
 import { Header } from './views/Header';

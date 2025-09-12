@@ -1,6 +1,6 @@
 {
   "app": {
-    "bundleName": "com.mess.progamers.sudoku",
+    "bundleName": "com.example.sudo",
     "vendor": "example",
     "versionCode": 1000000,
     "versionName": "1.0.0",

@@ -1,14 +1,12 @@
 import { relationalStore } from '@kit.ArkData';
 import tableHelper from './TableHelper';
 import { RdbHelper } from './RdbHelper';
-import ColumnInfo from '../../viewmodel/ColumnInfo';
-import { LogUtil } from '../../utils/LogUtil';
-import { window } from '@kit.ArkUI';
-import { GlobalContext } from '../constants/GlobalContext'; // 假设已创建
+import ColumnInfo from '../data/ColumnInfo';
+import { LogUtil } from '../utils/LogUtil';
+import { GlobalContext } from '../common/constants/GlobalContext'; // 假设已创建
 
-const DATABASE_NAME = 'Rdb.db';
-// 1. 定义数据库常量
-const DB_VERSION = 1; // 您的数据库版本号
+import { DB_CONFIG, TBL_GAME_RECORDS, TBL_LEVEL_INFO
+,TBL_LEVEL} from '../common/constants/DatabaseConstants';
 
 export class RdbHelperImp implements RdbHelper {
 
@@ -57,7 +55,7 @@ export class RdbHelperImp implements RdbHelper {
       try {
         const context = GlobalContext.getContext();
         const storeConfig: relationalStore.StoreConfig = {
-          name: DATABASE_NAME,
+          name: DB_CONFIG.DB_NAME,
           securityLevel: relationalStore.SecurityLevel.S1
         } as relationalStore.StoreConfig;
 
@@ -99,7 +97,7 @@ export class RdbHelperImp implements RdbHelper {
 
   onUpgrade(store: relationalStore.RdbStore) {
     let currentVersion = store.version;
-    LogUtil.info(`Current DB version: ${currentVersion}, Target DB version: ${DB_VERSION}`);
+    LogUtil.info(`Current DB version: ${currentVersion}, Target DB version: ${DB_CONFIG.DB_VERSION}`);
 
     // 创建 game_records 表
     const SQL_CREATE_GAME_RECORDS_TABLE = `
@@ -111,12 +109,21 @@ export class RdbHelperImp implements RdbHelper {
   `;
 
     store.executeSql(SQL_CREATE_GAME_RECORDS_TABLE);
-    
+
 
     // 从当前版本开始，逐级升级到目标版本
     if (currentVersion < 1) { // 对应文档中的 version === 0
         LogUtil.info('Upgrading from version 0 to 1: Creating initial tables.');
-        store.executeSql(SQL_CREATE_GAME_RECORDS_TABLE);
+
+      // 创建 game_records 表
+      store.executeSql(TBL_GAME_RECORDS.SQL_CREATE);
+      LogUtil.info(`Table '${TBL_GAME_RECORDS.NAME}' created.`);
+
+      // 创建 level 表
+      store.executeSql(TBL_LEVEL.SQL_CREATE);
+      store.executeSql(TBL_LEVEL.SQL_CREATE_UNIQUE_INDEX); // 创建唯一索引
+      store.executeSql(TBL_LEVEL_INFO.SQL_CREATE);
+      LogUtil.info(`Table '${TBL_LEVEL.NAME}' created.`);
     }
 
     if (currentVersion < 2) {
@@ -130,7 +137,7 @@ export class RdbHelperImp implements RdbHelper {
     }
 
     // 所有升级步骤完成后，将数据库版本设置为最终的目标版本
-    store.version = DB_VERSION;
+    store.version = DB_CONFIG.DB_VERSION;
     LogUtil.info(`Database successfully upgraded to version ${store.version}`);
   }
 
@@ -206,48 +213,6 @@ export class RdbHelperImp implements RdbHelper {
     }
   }
 
-
-
-
-
-
-  // private saveArray(tableName: string, values: Array<relationalStore.ValuesBucket>): Promise<number> {
-  //   return new Promise<number>((success, error) => {
-  //     if (!values || values.length === 0) {
-  //       error(0);
-  //       return;
-  //     }
-  //     let index = 0
-  //     let callback = (data: number, err: Error) => {
-  //       if (err) {
-  //         LogUtil.info(`saveArray failed, err : ${err}`);
-  //         error(err);
-  //         return;
-  //       }
-  //       if (data) {
-  //         if (index < values.length - 1) {
-  //           this.saveData(tableName, values, ++index, callback);
-  //         } else {
-  //           success(data);
-  //         }
-  //       }
-  //     }
-  //     this.saveData(tableName, values, index, callback);
-  //   })
-  // }
-  //
-  // private saveData(tableName: string, values: Array<relationalStore.ValuesBucket>, index: number, callback: Function): void {
-  //   LogUtil.info(`saveData tableName : ${tableName}, index : ${JSON.stringify(index)}`);
-  //
-  //   this.getInitializedRdbStore().insert(tableName, values[index]).then((data: number) => {
-  //     LogUtil.info(`saveData success id : ${data}`);
-  //     callback(data);
-  //   }).catch((err: Error) => {
-  //     LogUtil.error(`saveData failed, err : ${err}`);
-  //     callback(err);
-  //   })
-  // }
-
   update(values: relationalStore.ValuesBucket, rdbPredicates: relationalStore.RdbPredicates): Promise<number> {
     LogUtil.debug("RdbHelperImp update")
     return this.getInitializedRdbStore().update(values, rdbPredicates);
@@ -274,4 +239,4 @@ export class RdbHelperImp implements RdbHelper {
   }
 }
 
-export const rdbHelper = RdbHelperImp.getInstance(DATABASE_NAME);
+export const rdbHelper = RdbHelperImp.getInstance(DB_CONFIG.DB_NAME);

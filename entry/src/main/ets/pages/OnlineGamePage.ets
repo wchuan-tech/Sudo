@@ -1,9 +1,9 @@
 import { SudokuData } from '../data/SudokuModels';
 import { LevelInfo } from '../data/Levelnfo';
 import { LogUtil } from '../utils/LogUtil';
-import LevelInfoApi from '../common/database/LevelInfoApi';
+import LevelInfoApi from '../database/LevelInfoApi';
 import { AlertDialog, display,promptAction } from '@kit.ArkUI';
-import { gameRecordRepository } from '../common/database/GameRecordRepository';
+import { gameRecordRepository } from '../database/GameRecordRepository';
 
 interface CellPosition {
   row: number;

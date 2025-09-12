@@ -6,15 +6,8 @@
 
 #### 题库生成
 
-使用Python Sudoku 库，修改生成规则和难度、随机种子生成一定数量的谜底
+使用 Sudoku 库，修改生成规则和难度、随机种子生成一定数量的谜底
 
-```bash
-cd .\python_code_generate_Sudoku\
-// 生成数独谜题和对应的解
-python .\16Sudo.py
-// 调用加密,游戏中解密
-python .\decrypt.py
-```
 
 #### 截图
 

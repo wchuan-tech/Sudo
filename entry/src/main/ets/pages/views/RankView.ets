@@ -1,7 +1,7 @@
 import { SegmentButtonItemTuple, SegmentButtonOptions, SegmentButton } from "@kit.ArkUI"
 import { CommonConstants } from "../../common/constants/CommonConstants"
 import { StyleConstants } from "../../common/constants/StyleConstants"
-import LevelInfoApi from "../../common/database/LevelInfoApi"
+import LevelInfoApi from "../../database/LevelInfoApi"
 import { Difficulty } from "../../common/normal/Difficulty"
 import { LevelInfo } from "../../data/Levelnfo"
 import { LogUtil } from "../../utils/LogUtil"

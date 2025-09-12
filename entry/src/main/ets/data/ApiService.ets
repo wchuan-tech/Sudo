@@ -1,7 +1,7 @@
 import http from '@ohos.net.http';
 import { BusinessError } from '@ohos.base';
 import { LogUtil } from '../utils/LogUtil';
-
+import { JUHE_BASE_URL, JUHE_SUDOKU_PATH, JUHE_APP_KEY, MY_API_BASE_URL } from '../common/constants/ApiConstants';
 // =================================================================
 // 1. 数据模型定义 (Interfaces)
 // =================================================================
@@ -42,18 +42,12 @@ export interface LeaderboardEntry {
 // =================================================================
 
 class ApiService {
-  // 聚合数据 API 相关常量
-  private readonly JUHE_APP_KEY = "d6901e04c4f74bf8968b193987e744c8";
-  private readonly JUHE_SUDOKU_URL = "http://apis.juhe.cn/fapig/sudoku/generate";
-
-  // 自有服务器 API 地址 (示例)
-  private readonly BASE_URL = "https://api.your-sudoku-game.com";
 
   /**
    * 从聚合数据API获取一个新的数独谜题
    */
   async getSudokuFromJuhe(level: number,difficulty:string): Promise<JuheSudokuResult> {
-    const url = `${this.JUHE_SUDOKU_URL}?level=${level}&key=${this.JUHE_APP_KEY}&difficulty=${difficulty}q`;
+    const url = `${JUHE_BASE_URL}${JUHE_SUDOKU_PATH}?level=${level}&key=${JUHE_APP_KEY}`;
     LogUtil.debug(`ApiService: Requesting Sudoku from Juhe: ${url}`);
 
     let httpRequest = http.createHttp();
@@ -90,7 +84,7 @@ class ApiService {
    * 获取每日挑战 (示例)
    */
   async getDailyPuzzle(): Promise<DailyPuzzle> {
-    const url = `${this.BASE_URL}/daily_puzzle`;
+    const url = `${JUHE_BASE_URL}/daily_puzzle`;
     LogUtil.debug(`ApiService: Fetching daily puzzle from ${url}`);
     let httpRequest = http.createHttp();
 
@@ -122,7 +116,7 @@ class ApiService {
    * 提交分数到排行榜 (示例)
    */
   async submitScore(levelId: number, playerName: string, timeInSeconds: number): Promise<void> {
-    const url = `${this.BASE_URL}/leaderboard/submit`;
+    const url = `${MY_API_BASE_URL}/leaderboard/submit`;
     LogUtil.debug(`ApiService: Submitting score to ${url}`);
     let httpRequest = http.createHttp();
 

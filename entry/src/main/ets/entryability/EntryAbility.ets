@@ -5,13 +5,14 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { mediaquery, window } from '@kit.ArkUI';
 import { PreferencesUtil } from '../utils/PreferencesUtil';
 import { AppUtil } from '../utils/AppUtil';
-import RdbUtils from '../common/database/RdbUtils';
-import ColumnInfo from '../viewmodel/ColumnInfo';
+import RdbUtils from '../database/RdbUtils';
+import ColumnInfo from '../data/ColumnInfo';
 import { LogUtil } from '../utils/LogUtil';
 import { CommonConstants } from '../common/constants/CommonConstants';
 import {  emitter } from '@kit.BasicServicesKit';
 import { GlobalContext } from '../common/constants/GlobalContext';
-import { rdbHelper } from '../common/database/RdbHelperImp';
+import { rdbHelper } from '../database/RdbHelperImp';
+import {DB_CONFIG} from '../common/constants/DatabaseConstants'
 
 export default class EntryAbility extends UIAbility {
 
@@ -31,27 +32,17 @@ export default class EntryAbility extends UIAbility {
 
     try {
       // 调用我们 RdbHelper 的总开关，并等待它完成
-      await rdbHelper.initialize();
+      await this.initDataBase();
       LogUtil.info('Database has been successfully initialized in EntryAbility.');
     } catch (error) {
       LogUtil.error('FATAL: Database initialization failed in EntryAbility.', error);
       // 在生产环境中，这里可能需要记录严重错误或向用户显示一个无法继续的提示
     }
 
-    this.initDataBase()
-
-
 
     //添加订阅
-    this.callbackId = this.context.getApplicationContext().on('environment',this.envCallback);
-
-    // this.darkModeListener.on("change", (mediaQueryResult: mediaquery.MediaQueryResult) => {
-    //   LogUtil.debug("BreakpointConstants.DARK_MODE change callback : " + mediaQueryResult.matches)
-    //   this.context.getApplicationContext().setColorMode(
-    //     mediaQueryResult.matches as boolean ? ConfigurationConstant.ColorMode.COLOR_MODE_DARK
-    //       : ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT)
-    //
-    // })
+    this.callbackId = this.context.getApplicationContext()
+      .on('environment',this.envCallback);
   }
 
   onDestroy(): void {
@@ -103,8 +94,8 @@ export default class EntryAbility extends UIAbility {
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onBackground');
   }
 
-  sudokuDb: string = "Sudoku.db"
-  Level: string = "level"
+  sudokuDb: string = DB_CONFIG.DB_NAME // 数据库名称
+  Level: string = "level" // 表名
 
   // 列名, 类型， 长度， 可为空，约束唯一标识数据库表中的每条记录， 自动增量
   // constructor(name: string, type: string, length?: number, nullable?: boolean, primary?: boolean, autoincrement?: boolean)
@@ -121,7 +112,11 @@ export default class EntryAbility extends UIAbility {
   ];
 
   async initDataBase(): Promise<void> {
+
+    LogUtil.info("Ranking database (Rdb.db) initialized successfully.");
+
     RdbUtils.initDb(this.context, this.sudokuDb);
+    await rdbHelper.initialize();
     await RdbUtils.createDb();
     RdbUtils.createTable(this.Level, this.columnDayInfoList).then(() => {
       LogUtil.info(`RdbHelper createTable dayInfo success`);
@@ -132,15 +127,6 @@ export default class EntryAbility extends UIAbility {
 
   onConfigurationUpdate(newConfig: Configuration): void {
     LogUtil.debug("newConfig.colorMode = " + newConfig.colorMode + " this.currentMode = " + this.currentMode)
-    // if (this.followSystemMode && newConfig.colorMode != this.currentMode) {
-    //   AppStorage.setOrCreate('colorMode', newConfig.colorMode);
-    // }
-    // if (newConfig.colorMode != this.currentMode) {
-    //   this.context.getApplicationContext().setColorMode(newConfig.colorMode)
-    //   this.currentMode = newConfig.colorMode
-    // }
-    // AppStorage.setOrCreate(CommonConstants.ColorMode, newConfig.colorMode);
-    // this.context.getApplicationContext().setColorMode(newConfig.colorMode)
   }
 
   /**
