@@ -4,12 +4,7 @@ import { LogUtil } from '../utils/LogUtil';
 import RdbUtils from './RdbUtils';
 import { CommonConstants as Const } from '../common/constants/CommonConstants'
 class LevelInfoApi {
-  /**
-   * Insert dayInfo.
-   *
-   * @param dayInfo
-   * @param callback
-   */
+
   insertData(levelInfo: LevelInfo, callback: Function): void {
     const valueBucket = generateBucket(levelInfo);
     RdbUtils.insert('level', valueBucket).then(result => {
@@ -17,12 +12,7 @@ class LevelInfoApi {
     });
     LogUtil.info('LevelInfoTable Insert dayInfo finished.');
   }
-  /**
-   * Update dayInfo.
-   *
-   * @param dayInfo
-   * @param callback
-   */
+
   updateData(levelInfo: LevelInfo, callback: Function): void {
     let tableName = Const.LEVEL_INFO.tableName
     if (!tableName) {
@@ -40,25 +30,7 @@ class LevelInfoApi {
     });
     LogUtil.info('Update levelInfo finished.');
   }
-  /**
-   * Query dayInfo.
-   *
-   * @param date
-   * @param callback
-   */
-  /**
-   *     this.id = id
-         this.difficulty = difficulty
-         this.level = level
-         this.errorCount = errorCount
-         this.hintCount = hintCount
-         this.locked = locked
-         this.completed = completed
-         this.data = data
-         this.cumulativeTime = cumulativeTime
-   * @param date
-   * @param callback
-   */
+
   query(difficulty: string, level: number, callback: Function): void {
     let tableName = Const.LEVEL_INFO.tableName
     if (!tableName) {

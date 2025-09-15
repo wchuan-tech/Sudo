@@ -5,7 +5,7 @@ class TableHelper {
   createTableSql(tableName: string, columns: Array<ColumnInfo>): string {
     let sql = `create table if not exists ${tableName}(`;
     for (let column of columns) {
-      //Logger.info(`我来看看column是什么 : ${JSON.stringify(columns)},kkkkkkk${JSON.stringify(tableName)}`);
+
       sql = sql.concat(`${column.name} ${column.type}`);
       sql = sql.concat(`${column.length && column.length > 0 ? `(${column.length})` : ''}`);
       sql = sql.concat(`${column.primary ? ' primary key' : ''}`);

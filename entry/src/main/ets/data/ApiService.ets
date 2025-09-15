@@ -76,12 +76,10 @@ class ApiService {
     } finally {
       httpRequest.destroy();
     }
-    // 修正：添加一个 return/throw 语句来覆盖所有代码路径
-    throw new Error('ApiService: getSudokuFromJuhe function reached an unhandled state.');
   }
 
   /**
-   * 获取每日挑战 (示例)
+   * 获取每日挑战
    */
   async getDailyPuzzle(): Promise<DailyPuzzle> {
     const url = `${JUHE_BASE_URL}/daily_puzzle`;
@@ -108,8 +106,6 @@ class ApiService {
     } finally {
       httpRequest.destroy();
     }
-    // 修正：添加一个 return/throw 语句来覆盖所有代码路径
-    throw new Error('ApiService: getDailyPuzzle function reached an unhandled state.');
   }
 
   /**

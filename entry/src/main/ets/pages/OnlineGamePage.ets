@@ -3,7 +3,7 @@ import { LevelInfo } from '../data/Levelnfo';
 import { LogUtil } from '../utils/LogUtil';
 import LevelInfoApi from '../database/LevelInfoApi';
 import { AlertDialog, display,promptAction } from '@kit.ArkUI';
-import { gameRecordRepository } from '../database/GameRecordRepository';
+import { GameRecordRepository} from '../database/GameRecordRepository';
 
 interface CellPosition {
   row: number;
@@ -521,6 +521,8 @@ struct OnlineGamePage {
     try {
       // 3. 【第一步：更新数据库】
       //    调用 repository 的方法，等待它完成
+      const gameRecordRepository = new GameRecordRepository();
+
       await gameRecordRepository.updateBestTimeIfNeeded(finalDifficulty, finalTime);
       LogUtil.info("Record update process completed.");
 
@@ -553,13 +555,6 @@ struct OnlineGamePage {
   }
 
   savaGameData() {
-    // PreferencesUtil.putSync("ErrorCount", this.errorCount)
-    // PreferencesUtil.putSync("HintCount", this.hintCount)
-    // PreferencesUtil.putSync("Level", this.level)
-    // PreferencesUtil.putSync("Difficulty", this.difficulty)
-    // let dataString = DataUtil.map2JsonString(this.cells)
-    // LogUtil.debug("dataString : " + dataString)
-    // PreferencesUtil.putSync("Data", dataString)
     this.curLevelInfo.cumulativeTime = this.cumulativeTime
     LogUtil.debug("savaGameData time : " + this.curLevelInfo.cumulativeTime)
     LevelInfoApi.updateData(this.curLevelInfo, (result: number) => {

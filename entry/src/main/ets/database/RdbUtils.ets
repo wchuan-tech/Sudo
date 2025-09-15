@@ -4,12 +4,8 @@ import { RdbHelper } from './RdbHelper';
 import { RdbHelperImp } from './RdbHelperImp';
 import { LogUtil } from '../utils/LogUtil';
 
-import { DB_CONFIG, TBL_GAME_RECORDS, TBL_LEVEL_INFO
-  ,TBL_LEVEL} from '../common/constants/DatabaseConstants';
-
-
 let dbContext: Context;
-let mDatabaseName: string = DB_CONFIG.DB_NAME;
+let mDatabaseName: string ;
 
 export class RdbUtils {
   private rdbHelpers = new Map<string, RdbHelper>();
@@ -19,19 +15,23 @@ export class RdbUtils {
     mDatabaseName = databaseName;
   }
 
+
   createDb(): Promise<RdbHelper> {
     return new Promise<RdbHelper>((success, error) => {
-      let dbName = mDatabaseName;
-      if (!dbContext || !dbName || dbName.length === 0) {
-        error('init err');
+
+      if (!dbContext || !mDatabaseName || mDatabaseName.length === 0) {
+        error('init error');
         return;
       }
-      let dbHelper = this.rdbHelpers.get(dbName);
+
+      let dbHelper = this.rdbHelpers.get(mDatabaseName);
+
       if (!dbHelper) {
         LogUtil.info(`initRdb  RdbUtils success`);
-        let rdbHelper: RdbHelper = new RdbHelperImp(dbName);
+        let rdbHelper: RdbHelper = new RdbHelperImp(mDatabaseName);
         rdbHelper.getRdb(dbContext).then(data => {
-          this.rdbHelpers.set(dbName, data);
+          rdbHelper.initialize();
+          this.rdbHelpers.set(mDatabaseName, data);
           success(data);
         }).catch((err: Error) => {
           error(err);

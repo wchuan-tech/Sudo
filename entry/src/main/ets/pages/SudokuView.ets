@@ -1,17 +1,10 @@
 import { BoardView } from './views/BoardView';
-import { AlertDialog, ButtonOptions, display, LengthMetrics, promptAction, router } from '@kit.ArkUI';
+import { AlertDialog, display, LengthMetrics, promptAction } from '@kit.ArkUI';
 import { LogUtil } from '../utils/LogUtil';
-import map from '@hms.core.map.map';
 import { Cell } from '../data/Cell';
 import { DataUtil } from '../utils/DataUtil';
-import { GameData } from '../data/GameData';
-import { preferences } from '@kit.ArkData';
-import { PreferencesUtil } from '../utils/PreferencesUtil';
-import { RawUtils } from '../utils/RawUtils';
 import { LevelInfo } from '../data/Levelnfo';
 import LevelInfoApi from '../database/LevelInfoApi';
-import { GridConstants } from '../common/constants/GridConstants';
-import { StyleConstants } from '../common/constants/StyleConstants';
 import { Difficulty } from '../common/normal/Difficulty';
 
 

@@ -2,13 +2,14 @@
 
 import { relationalStore } from '@kit.ArkData';
 import type { ValuesBucket } from '@kit.ArkData';
-import { rdbHelper } from './RdbHelperImp';
 import { GameRecord } from './GameRecord';
 import { LogUtil } from '../utils/LogUtil'; // 假设您有 LogUtil
 
+import RdbUtils from '../database/RdbUtils';
+
 const TABLE_NAME = 'game_records';
 
-class GameRecordRepository {
+export class GameRecordRepository {
 
   /**
    * 检查并更新指定难度的最小时间。
@@ -26,7 +27,7 @@ class GameRecordRepository {
       const predicates = new relationalStore.RdbPredicates(TABLE_NAME);
       predicates.equalTo('difficulty', difficulty);
 
-      const resultSet = await rdbHelper.query(predicates, ['best_time']);
+      const resultSet = await RdbUtils.query(predicates, ['best_time']);
 
       if (resultSet.rowCount > 0) {
         // --- 记录已存在 ---
@@ -44,7 +45,7 @@ class GameRecordRepository {
           const updatePredicates = new relationalStore.RdbPredicates(TABLE_NAME);
           updatePredicates.equalTo('difficulty', difficulty);
 
-          await rdbHelper.update(valuesToUpdate, updatePredicates);
+          await RdbUtils.update(valuesToUpdate, updatePredicates);
           LogUtil.info("Record updated successfully.");
         } else {
           LogUtil.info(`New time ${newTime}s is not better. No update needed.`);
@@ -60,7 +61,7 @@ class GameRecordRepository {
           'difficulty': difficulty,
           'best_time': newTime
         };
-        await rdbHelper.insert(TABLE_NAME, valuesToInsert);
+        await RdbUtils.insert(TABLE_NAME, valuesToInsert);
         LogUtil.info("New record inserted successfully.");
       }
     } catch (err) {
@@ -81,9 +82,9 @@ class GameRecordRepository {
   public async getRecordByDifficulty(difficulty: string): Promise<GameRecord | null> {
     const predicates = new relationalStore.RdbPredicates(TABLE_NAME);
     predicates.equalTo('difficulty', difficulty);
-    let resultSet = await rdbHelper.query(predicates, ['best_time']);
+    let resultSet = await RdbUtils.query(predicates, ['best_time']);
     try {
-      resultSet = await rdbHelper.query(predicates);
+      resultSet = await RdbUtils.query(predicates);
       if (resultSet.rowCount === 0) return null;
       resultSet.goToFirstRow();
       return {
@@ -99,6 +100,3 @@ class GameRecordRepository {
     }
   }
 }
-
-// 导出一个该类的单例，供整个应用使用
-export const gameRecordRepository = new GameRecordRepository();

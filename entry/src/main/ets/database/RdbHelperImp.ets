@@ -11,7 +11,7 @@ import { DB_CONFIG, TBL_GAME_RECORDS, TBL_LEVEL_INFO
 export class RdbHelperImp implements RdbHelper {
 
   private mDatabaseName: string;
-  // 信息实例 即数据库实例话
+  // 信息实例 即数据库实例化
   private rdbStore: relationalStore.RdbStore | null= null;
   private isInitialized: boolean = false;
 
@@ -31,7 +31,6 @@ export class RdbHelperImp implements RdbHelper {
     return RdbHelperImp.instance;
   }
 
-
   getDbName(): string {
     return this.mDatabaseName;
   }
@@ -44,7 +43,7 @@ export class RdbHelperImp implements RdbHelper {
     return this;
   }
 
-  public  initialize(): Promise<void> {
+  public initialize(): Promise<void> {
 
     if (this.isInitialized) {
       LogUtil.info('Database is already initialized.');
@@ -238,5 +237,3 @@ export class RdbHelperImp implements RdbHelper {
     return this.getInitializedRdbStore().delete(rdbPredicates);
   }
 }
-
-export const rdbHelper = RdbHelperImp.getInstance(DB_CONFIG.DB_NAME);

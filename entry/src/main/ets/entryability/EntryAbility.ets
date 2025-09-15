@@ -11,8 +11,10 @@ import { LogUtil } from '../utils/LogUtil';
 import { CommonConstants } from '../common/constants/CommonConstants';
 import {  emitter } from '@kit.BasicServicesKit';
 import { GlobalContext } from '../common/constants/GlobalContext';
-import { rdbHelper } from '../database/RdbHelperImp';
-import {DB_CONFIG} from '../common/constants/DatabaseConstants'
+
+import { DB_CONFIG, TBL_GAME_RECORDS, TBL_LEVEL_INFO
+  ,TBL_LEVEL} from '../common/constants/DatabaseConstants';
+
 
 export default class EntryAbility extends UIAbility {
 
@@ -95,7 +97,7 @@ export default class EntryAbility extends UIAbility {
   }
 
   sudokuDb: string = DB_CONFIG.DB_NAME // 数据库名称
-  Level: string = "level" // 表名
+  Level: string = TBL_LEVEL.NAME // 表名
 
   // 列名, 类型， 长度， 可为空，约束唯一标识数据库表中的每条记录， 自动增量
   // constructor(name: string, type: string, length?: number, nullable?: boolean, primary?: boolean, autoincrement?: boolean)
@@ -116,8 +118,8 @@ export default class EntryAbility extends UIAbility {
     LogUtil.info("Ranking database (Rdb.db) initialized successfully.");
 
     RdbUtils.initDb(this.context, this.sudokuDb);
-    await rdbHelper.initialize();
     await RdbUtils.createDb();
+
     RdbUtils.createTable(this.Level, this.columnDayInfoList).then(() => {
       LogUtil.info(`RdbHelper createTable dayInfo success`);
     }).catch((err: Error) => {
