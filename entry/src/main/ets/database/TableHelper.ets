@@ -12,7 +12,7 @@ class TableHelper {
       sql = sql.concat(`${column.autoincrement ? ' autoincrement' : ''}`);
       sql = sql.concat(`${column.nullable ? '' : ' not null'}`);
       sql = sql.concat(', ');
-      LogUtil.info('sql是啥啊',sql)
+      LogUtil.info('sql:',sql)
     }
     sql = `${sql.substring(0, sql.length - 2)})`;
     return sql;

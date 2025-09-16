@@ -85,7 +85,8 @@ export class GameRecordRepository {
     let resultSet = await RdbUtils.query(predicates, ['best_time']);
     try {
       resultSet = await RdbUtils.query(predicates);
-      if (resultSet.rowCount === 0) return null;
+      if (resultSet.rowCount === 0)
+        return null;
       resultSet.goToFirstRow();
       return {
         id: resultSet.getLong(resultSet.getColumnIndex('id')),
@@ -93,7 +94,6 @@ export class GameRecordRepository {
         bestTime: resultSet.getLong(resultSet.getColumnIndex('best_time'))
       };
     } finally {
-      // 【优化】这个 finally 块确保了无论 try 中是 return 还是出错，都会执行 close
       if (resultSet) {
         resultSet.close();
       }

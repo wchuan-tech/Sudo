@@ -1,5 +1,5 @@
 import { LengthMetrics } from "@kit.ArkUI"
-import { StyleConstants } from "../../common/constants/StyleConstants";
+import { StyleConstants } from "../../constants/StyleConstants";
 
 @Component
 export struct Header {

@@ -43,7 +43,6 @@ export abstract class TBL_LEVEL_INFO {
   static readonly COL_LEVEL = 'level';
   static readonly COL_DATA = 'data';
   static readonly COL_COMPLETED = 'completed';
-  // ... 其他列
 
   // 创建表的 SQL 语句
   static readonly SQL_CREATE = `

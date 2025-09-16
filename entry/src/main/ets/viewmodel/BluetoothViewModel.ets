@@ -146,7 +146,7 @@ export class BluetoothViewModel {
       this.isScanning = false;
     }
 
-    // (可选) 设置一个超时来自动停止扫描
+    //  设置一个超时来自动停止扫描
     setTimeout(() => {
       this.stopScan();
     }, 15000); // 扫描15秒

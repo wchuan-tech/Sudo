@@ -5,7 +5,7 @@ import { Cell } from '../data/Cell';
 import { DataUtil } from '../utils/DataUtil';
 import { LevelInfo } from '../data/Levelnfo';
 import LevelInfoApi from '../database/LevelInfoApi';
-import { Difficulty } from '../common/normal/Difficulty';
+import { Difficulty } from '../constants/DifficultyConstants';
 
 
 @Builder

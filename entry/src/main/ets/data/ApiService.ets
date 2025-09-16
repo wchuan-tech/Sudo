@@ -1,7 +1,7 @@
 import http from '@ohos.net.http';
 import { BusinessError } from '@ohos.base';
 import { LogUtil } from '../utils/LogUtil';
-import { JUHE_BASE_URL, JUHE_SUDOKU_PATH, JUHE_APP_KEY, MY_API_BASE_URL } from '../common/constants/ApiConstants';
+import { JUHE_BASE_URL, JUHE_SUDOKU_PATH, JUHE_APP_KEY, MY_API_BASE_URL } from '../constants/ApiConstants';
 // =================================================================
 // 1. 数据模型定义 (Interfaces)
 // =================================================================

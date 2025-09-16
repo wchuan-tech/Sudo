@@ -8,12 +8,12 @@ import { AppUtil } from '../utils/AppUtil';
 import RdbUtils from '../database/RdbUtils';
 import ColumnInfo from '../data/ColumnInfo';
 import { LogUtil } from '../utils/LogUtil';
-import { CommonConstants } from '../common/constants/CommonConstants';
+import { CommonConstants } from '../constants/CommonConstants';
 import {  emitter } from '@kit.BasicServicesKit';
-import { GlobalContext } from '../common/constants/GlobalContext';
+import { GlobalContext } from '../constants/GlobalContext';
 
 import { DB_CONFIG, TBL_GAME_RECORDS, TBL_LEVEL_INFO
-  ,TBL_LEVEL} from '../common/constants/DatabaseConstants';
+  ,TBL_LEVEL} from '../constants/DatabaseConstants';
 
 
 export default class EntryAbility extends UIAbility {
@@ -54,7 +54,6 @@ export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // Main window is created, set main page for this ability
     AppUtil.init(this.context, windowStage)
-
 
     LogUtil.debug("onWindowStageCreate")
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
@@ -99,32 +98,13 @@ export default class EntryAbility extends UIAbility {
   sudokuDb: string = DB_CONFIG.DB_NAME // 数据库名称
   Level: string = TBL_LEVEL.NAME // 表名
 
-  // 列名, 类型， 长度， 可为空，约束唯一标识数据库表中的每条记录， 自动增量
-  // constructor(name: string, type: string, length?: number, nullable?: boolean, primary?: boolean, autoincrement?: boolean)
-  columnDayInfoList: Array<ColumnInfo> = [
-    new ColumnInfo('id', 'integer', -1, false, true, true),
-    new ColumnInfo('difficulty', 'text', -1, false, false, false),
-    new ColumnInfo('level', 'integer', -1, false, false, false),
-    new ColumnInfo('errorCount', 'integer', -1, false, false, false),
-    new ColumnInfo('hintCount', 'integer', -1, false, false, false),
-    new ColumnInfo('locked', 'boolean', -1, false, false, false),
-    new ColumnInfo('completed', 'boolean', -1, false, false, false),
-    new ColumnInfo('data', 'text', -1, false, false, false),
-    new ColumnInfo('cumulativeTime', 'integer', -1, false, false, false)
-  ];
 
   async initDataBase(): Promise<void> {
 
     LogUtil.info("Ranking database (Rdb.db) initialized successfully.");
-
     RdbUtils.initDb(this.context, this.sudokuDb);
     await RdbUtils.createDb();
 
-    RdbUtils.createTable(this.Level, this.columnDayInfoList).then(() => {
-      LogUtil.info(`RdbHelper createTable dayInfo success`);
-    }).catch((err: Error) => {
-      LogUtil.error(`RdbHelper dayInfo err : ${JSON.stringify(err)}`);
-    });
   }
 
   onConfigurationUpdate(newConfig: Configuration): void {

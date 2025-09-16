@@ -1,5 +1,5 @@
-import { CommonConstants } from "../../common/constants/CommonConstants"
-import { StyleConstants } from "../../common/constants/StyleConstants"
+import { CommonConstants } from "../../constants/CommonConstants"
+import { StyleConstants } from "../../constants/StyleConstants"
 import { DividerTmp } from "./DividerTmp"
 
 @Preview

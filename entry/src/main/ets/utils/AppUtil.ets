@@ -473,5 +473,4 @@ export class AppUtil{
     AppUtil.getContext().getApplicationContext().killAllProcesses();
   }
 
-
 }

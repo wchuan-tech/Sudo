@@ -1,4 +1,4 @@
-import CommonConstantsInfo from '../../data/CommonConstantsInfo';
+import CommonConstantsInfo from '../data/CommonConstantsInfo';
 
 export class CommonConstants {
 

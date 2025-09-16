@@ -1,9 +1,9 @@
-import { CommonConstants } from "../../common/constants/CommonConstants"
+import { CommonConstants } from "../../constants/CommonConstants"
 import { LogUtil } from "../../utils/LogUtil"
 import { ConfigurationConstant } from "@kit.AbilityKit"
 import { PreferencesUtil } from "../../utils/PreferencesUtil"
 import { DividerTmp } from "./DividerTmp"
-import { StyleConstants } from "../../common/constants/StyleConstants"
+import { StyleConstants } from "../../constants/StyleConstants"
 
 @Preview
 @Component

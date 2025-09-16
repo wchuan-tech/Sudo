@@ -30,16 +30,16 @@ import { DataUtil } from '../utils/DataUtil';
 import { LevelInfo } from '../data/Levelnfo';
 import { ToastUtil } from '../utils/ToastUtil';
 import LevelInfoApi from '../database/LevelInfoApi';
-import { GridConstants } from '../common/constants/GridConstants';
-import { StyleConstants } from '../common/constants/StyleConstants';
+import { GridConstants } from '../constants/GridConstants';
+import { StyleConstants } from '../constants/StyleConstants';
 import { Header } from './views/Header';
-import { BreakpointConstants } from '../common/constants/BreakpointConstants';
+import { BreakpointConstants } from '../constants/BreakpointConstants';
 import { BreakpointSystem } from '../utils/BreakpointSystem';
 import { MineView } from './views/MineView';
-import { Difficulty } from '../common/normal/Difficulty';
+import { Difficulty } from '../constants/DifficultyConstants';
 import { abilityAccessCtrl, common, ConfigurationConstant, EnvironmentCallback } from '@kit.AbilityKit';
 import { emitter } from '@kit.BasicServicesKit';
-import { CommonConstants } from '../common/constants/CommonConstants';
+import { CommonConstants } from '../constants/CommonConstants';
 
 import { promptAction } from '@kit.ArkUI'; // 导入 promptAction 用于显示对话框
 

@@ -1,5 +1,5 @@
 import { mediaquery } from '@kit.ArkUI';
-import { BreakpointConstants } from '../common/constants/BreakpointConstants';
+import { BreakpointConstants } from '../constants/BreakpointConstants';
 
 declare interface BreakPointTypeOption<T> {
   sm?: T,

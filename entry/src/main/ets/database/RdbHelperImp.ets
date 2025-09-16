@@ -3,10 +3,10 @@ import tableHelper from './TableHelper';
 import { RdbHelper } from './RdbHelper';
 import ColumnInfo from '../data/ColumnInfo';
 import { LogUtil } from '../utils/LogUtil';
-import { GlobalContext } from '../common/constants/GlobalContext'; // 假设已创建
+import { GlobalContext } from '../constants/GlobalContext'; // 假设已创建
 
 import { DB_CONFIG, TBL_GAME_RECORDS, TBL_LEVEL_INFO
-,TBL_LEVEL} from '../common/constants/DatabaseConstants';
+,TBL_LEVEL} from '../constants/DatabaseConstants';
 
 export class RdbHelperImp implements RdbHelper {
 
@@ -122,6 +122,7 @@ export class RdbHelperImp implements RdbHelper {
       store.executeSql(TBL_LEVEL.SQL_CREATE);
       store.executeSql(TBL_LEVEL.SQL_CREATE_UNIQUE_INDEX); // 创建唯一索引
       store.executeSql(TBL_LEVEL_INFO.SQL_CREATE);
+
       LogUtil.info(`Table '${TBL_LEVEL.NAME}' created.`);
     }
 
