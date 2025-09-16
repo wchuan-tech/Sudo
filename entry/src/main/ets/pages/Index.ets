@@ -30,7 +30,6 @@ import { DataUtil } from '../utils/DataUtil';
 import { LevelInfo } from '../data/Levelnfo';
 import { ToastUtil } from '../utils/ToastUtil';
 import LevelInfoApi from '../database/LevelInfoApi';
-import { GridConstants } from '../constants/GridConstants';
 import { StyleConstants } from '../constants/StyleConstants';
 import { Header } from './views/Header';
 import { BreakpointConstants } from '../constants/BreakpointConstants';
@@ -110,8 +109,9 @@ struct Index {
     LogUtil.debug("Index aboutToAppear")
     this.breakpointSystem.register();
     this.initData(this.curDifficulty)
-
     this.subscribeConfigurationUpdate()
+
+    this.gameViewModel.loadRemainingApiCall(); // 每次页面显示时都刷新
   }
 
   aboutToDisappear(): void {
@@ -363,6 +363,13 @@ struct Index {
         .fontSize($r('app.float.description_font_size'))
         .fontColor($r('app.color.item_name_color'))
       Blank()
+
+      // 【新增】显示剩余次数的文本
+      Text(`剩余: ${this.gameViewModel.remainingApiCall}`)
+        .fontSize(12)
+        .fontColor($r('app.color.api_service_count'))
+        .margin({ right: 10 })
+
       if (this.gameViewModel.isLoading) {
         Progress({ value: 0, total: 100 }).width(20).height(20)
       } else {
@@ -384,7 +391,7 @@ struct Index {
     .borderRadius(12)
     .onClick(async () => {
       // 点击时，依然是调用 ViewModel 的方法来获取数据
-      await this.gameViewModel.fetchOnlineSudoku(1);
+      await this.gameViewModel.fetchOnlineSudoku();
       const puzzleData = this.gameViewModel.juhePuzzle;
 
 

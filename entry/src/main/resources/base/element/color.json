@@ -68,6 +68,12 @@
       "name": "badge_remain_count",
       "value": "#CD5C5C"
     },
+
+    {
+      "name": "api_service_count",
+      "value": "#007DFE"
+    },
+
     {
       "name": "level_background",
       "value": "#FDF5E6"
@@ -80,6 +86,7 @@
       "name": "bar_selected_color",
       "value": "#007DFF"
     },
+
     {
       "name": "bar_unselected_color",
       "value": "#696969"

@@ -4,12 +4,21 @@
  */
 
 // --- 聚合数据 API ---
-export const JUHE_BASE_URL = "http://apis.juhe.cn/fapig";
-export const JUHE_SUDOKU_PATH = "/sudoku/generate";
-export const JUHE_APP_KEY = "d6901e04c4f74bf8968b193987e744c8"; // 警告：在真实项目中，AppKey 不应硬编码在客户端
+export class ApiConstants {
+  static readonly JUHE_BASE_URL = "http://apis.juhe.cn/fapig";
 
-// --- 自有服务器 API (示例) ---
-export const MY_API_BASE_URL = "https://api.your-sudoku-game.com";
+  static readonly JUHE_SUDOKU_PATH = "/sudoku/generate";
 
-// --- 通用网络配置 ---
-export const REQUEST_TIMEOUT = 15000; // 请求超时时间 (毫秒)
+  static readonly JUHE_APP_KEY = "d6901e04c4f74bf8968b193987e744c8";
+  // --- 自有服务器 API (示例) ---
+  static readonly MY_API_BASE_URL = "https://api.your-sudoku-game.com";
+  // --- 通用网络配置 ---
+  static readonly REQUEST_TIMEOUT = 15000; // 请求超时时间 (毫秒)
+
+  // 新增：用于 API 次数管理的 Preferences 键
+  static readonly API_CALL_DATE_KEY = 'api_call_date'; // 存储上次调用API的日期 (格式: YYYY-MM-DD)
+  static readonly API_CALL_COUNT_KEY = 'api_call_count'; // 存储当天已调用次数
+
+  // 假设聚合数据每天的免费次数是 50 次
+  static readonly JUHE_API_DAILY_LIMIT = 50;
+}

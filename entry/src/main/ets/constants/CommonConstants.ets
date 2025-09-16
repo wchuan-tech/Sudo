@@ -16,8 +16,6 @@ export class CommonConstants {
 
   static Rank_Item_Height: number = 80
 
-  static readonly RDB_NAME = { dbName: 'Sudoku.db' } as CommonConstantsInfo; // db name
-
   static ColorMode: string = "currentColorMode"
 
   static PreferenceName: string = "Store"

@@ -47,8 +47,6 @@ export class PreferencesUtil {
   static init(name: string) {
     PreferencesUtil.defaultPreferenceName = name;
   }
-
-
   /**
    * 将数据缓存
    * @param key
