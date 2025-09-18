@@ -40,10 +40,6 @@ export struct BoardView {
   restarted: boolean
 
   @Link
-  @Watch("doHint")
-  hintClicked: boolean
-
-  @Link
   @Watch("doEditOn")
   editOn: boolean
 
@@ -90,12 +86,8 @@ export struct BoardView {
   build() {
     Column() {
       Canvas(this.context)                        // 设置Canvas所需要的context
-        // .size({width: '100%', height: '100%'})    // 设置Canvas的宽高
-        // .backgroundColor(Color.Gray)
         .onReady(() => {                          // 监听回调，在回调内执行绘画操作
-          // this.context.fillRect(10, 10, 130, 40); // 以(10, 10)为起点坐标，画矩形，默认黑色
           this.drawGrid()
-          // this.initDrawText()
           this.drawText(TextDrawState.Change)
         })
         .onTouch((event: TouchEvent) => {
@@ -139,9 +131,6 @@ export struct BoardView {
     // 每次先赋值正确值为Z,父组件观察到变化但不进行操作
     this.gotCorrectValue = "Z"
     if (this.selectedCellRow != -1 && this.selectedCellCol != -1 && this.inputValue != "Z") {
-      // this.drawCell(this.selectedCellRow, this.selectedCellCol, this.inputValue)
-      // let index = this.selectedCellRow + 1;
-      // if(this.selectedCellCol)
       let index = this.count * (this.selectedCellRow) + this.selectedCellCol;
       console.log("index = ", index)
 
@@ -152,7 +141,6 @@ export struct BoardView {
         LogUtil.error(`BoardView.updateValue: Cannot find cell at index ${index}. Aborting.`);
         return; // 如果找不到单元格，直接退出函数，避免崩溃
       }
-      // =======================================================
 
       let correctValue = curCell._correctValue; // 现在 curCell 一定有值，这行是安全的
 
@@ -303,7 +291,6 @@ export struct BoardView {
           this.context.fillText(value, x, y);
         } else {
           if (cellElement._error) {
-            // this.context.fillStyle = $r('app.color.text_color_value') as ResourceColor
             this.context.fillStyle = this.errorValueColor
           } else {
             this.context.fillStyle = this.defaultValueColor
@@ -312,25 +299,6 @@ export struct BoardView {
           this.context.fillText(value, x, y);
         }
 
-      }
-    });
-  }
-
-  drawHintText() {
-    let cellWidth = this.context.width / this.count;
-
-    this.cells.forEach(cellElement => {
-      let value = cellElement._value
-      if (value != "Z") {
-        let x = cellElement._col * cellWidth + (cellWidth / 3);
-        let y = cellElement._row * cellWidth + (cellWidth / 4) * 3;
-        if (cellElement._error) {
-          this.context.fillStyle = "#FF0000";
-        } else {
-          this.context.fillStyle = "#000000"
-        }
-        this.context.font = Math.ceil(cellWidth) * 2 + "px sans-serif";
-        this.context.fillText(value, x, y);
       }
     });
   }
@@ -344,7 +312,7 @@ export struct BoardView {
     this.context.fillRect(x, y, cellWidth, cellWidth)
   }
 
-  doReset(changedPropertyName: string) {
+  doReset() {
     LogUtil.debug("BoardView call doReset this.restarted : " + this.restarted)
     if (this.restarted) {
       this.inputCells = new Stack<Cell>()
@@ -355,35 +323,6 @@ export struct BoardView {
       this.resetState()
       this.restarted = false
     }
-  }
-
-  doHint(changedPropertyName: string) {
-    LogUtil.debug("doHint hintClicked = " + this.hintClicked)
-    if (!this.hintClicked) {
-      return
-    }
-    if (this.selectedCellCol != -1 && this.selectedCellRow != -1) {
-      let index = this.count * (this.selectedCellRow) + this.selectedCellCol;
-      console.log("index = ", index)
-      let curCell:Cell = this.cells.get(index) as Cell
-      let correctValue = curCell._correctValue
-      if (!curCell._locked) {
-        this.gotCorrectValue = curCell._value = correctValue
-        this.doRedraw()
-        this.hintClicked = false
-        return
-      }
-    }
-    // 从第一个格子开始遍历，找到空格，再从leveData._solution 获取到值填入
-    // 这里只能
-    let cellElement = this.getSpaceCell()
-    if (cellElement != null) {
-      let hintValue: string = cellElement._correctValue
-      cellElement._value = hintValue
-      this.doRedraw()
-      this.hintClicked = false
-    }
-    return
   }
 
   getSpaceCell(): Cell | null{
@@ -398,11 +337,11 @@ export struct BoardView {
     return null
   }
 
-  doEditOn(changedPropertyName: string) {
+  doEditOn() {
     console.log("enter doEditOn editOn : " + this.editOn)
   }
 
-  doUndid(changedPropertyName: string) {
+  doUndid() {
 
     if (this.undid) {
       if (this.inputCells.length > 0) {
@@ -428,7 +367,7 @@ export struct BoardView {
     this.undid = false
   }
 
-  doErase(changedPropertyName: string) {
+  doErase() {
     if (!this.erased) {
       return
     }
@@ -461,7 +400,7 @@ export struct BoardView {
     this.resetState()
   }
 
-  listenerData(changedPropertyName: string) {
+  listenerData() {
     LogUtil.debug("ListenerData this.cells")
   }
 }

@@ -5,6 +5,14 @@ import LevelInfoApi from '../database/LevelInfoApi';
 import { AlertDialog, display,promptAction } from '@kit.ArkUI';
 import { GameRecordRepository} from '../database/GameRecordRepository';
 
+
+interface Move {
+  row: number;
+  col: number;
+  oldValue: number;
+  newValue: number;
+}
+
 interface CellPosition {
   row: number;
   col: number;
@@ -19,41 +27,75 @@ export function OnlineGamePageBuilder() {
 @Component
 struct OnlineGamePage {
 
+  @State
+  @Watch("listenerError")
+  gotError: boolean = false
+
+  @State
+  @Watch("updateValue")
+  // 传递值到子组件BoardView中
+  inputValue: string = "Z";
+
+  @State
+  @Watch("listenerRestart")
+  restarted: boolean = false
+
+  @State
+  @Watch("undoCallback")
+  undid:boolean = false
+
+  @State
+  editOn: boolean = false
+
+  @State
+  @Watch("listenerCorrect")
+  gotCorrectValue: string = "Z"
+
+  @State
+  // @Watch("eraseCallback")
+  erased:boolean = false
+
   @Consume('navPathStack')
   pathStack: NavPathStack
 
   private boardSideLength = display.getDefaultDisplaySync().width * 0.9 - vp2px(5) * 2;
 
-  // 难度
-  @State
-  difficulty: string = "Loading..."; // 初始显示 "Loading..."
+  // --- 游戏核心状态 ---
+  @State private puzzle: number[][] = [];
+  @State private solution: number[][] = [];
+  @State private playerBoard: number[][] = [];
+  @State private notes: number[][][] = []; // 笔记
+  @State private errorBoard: boolean[][] = [];
+  @State private historyStack: Move[] = []; // 撤销栈
+
+  // --- 游戏过程状态 ---
+  @State difficulty: string = "Loading...";
+  @State isPlaying: boolean = true;
+  @State cumulativeTime: number = 0;
+  @State errorCount: number = 5;
+  @State hpStates: boolean[] = [true, true, true, true, true];
+
+  // --- 操作按钮状态 ---
+  @State operate_buttons: string[] = ["undo", "erase", "edit"];
+  @State private editMode: boolean = false; // 笔记模式
+  @State editBadgeOn: boolean = false; // Badge 显示状态
+  @State editBadgeColor: Resource = $r('app.color.operate_edit_off');
+
+
   PK: string = "PK"
 
 
   // 组件
   // 暂停/开始按钮
-  @State isPlaying: boolean = true  // 判断是否要暂停
   @State buttonIcon:Resource = this.isPlaying ? $r('app.media.pause') : $r('app.media.play')
   @State elapsedTime: number = 0
   @State timerId: number = 1;
-  // 传递值到子组件BoardView中
-  @State
-  @Watch("updateValue")
-  inputValue: string = "Z";
 
-  // Data life time...
-  @State
-  cumulativeTime: number = 0;
   @State
   curLevelInfo: LevelInfo = new LevelInfo(0, "newbie", 1, 5, 5, true, false, "", 0)
   @State
   hintCount: number = 5
 
-  // 生命值
-  @State
-  hpStates: boolean[] = [true, true, true, true, true]
-  @State
-  errorCount: number = 5
 
   // 数字以及各类游戏操作
   @State
@@ -63,44 +105,6 @@ struct OnlineGamePage {
   private highlightedNumber: number = 0; // 0 表示没有数字被高亮
 
 
-  @State
-  private errorBoard: boolean[][] = [];
-
-
-  @State
-  operate_buttons: string[] = ["undo", "erase", "edit", "hint"]
-  @State
-  editBadgeOn: boolean = false // 提示按钮的badge
-  // 提示能否编辑
-  @State
-  editBadgeColor: Resource = this.editBadgeOn ? $r('app.color.operate_edit_on') : $r('app.color.operate_edit_off')
-
-  // 是否能提示
-  @State
-  hintClicked: boolean = false
-
-
-  // 撤回
-  @State
-  @Watch("undoCallback")
-  undid:boolean = false
-
-  // 笔记
-  @State
-  editOn: boolean = false
-
-  @State
-  // 擦除
-  // @Watch("eraseCallback")
-  erased:boolean = false
-
-  @State
-  remainCount: number[] = [9, 9, 9, 9, 9, 9, 9, 9, 9]
-
-  @State private puzzle: number[][] = [];
-  @State private solution: number[][] = [];
-  // 专门用于玩家操作的棋盘，是 puzzle 的一个深拷贝
-  @State private playerBoard: number[][] = [];
   // 记录当前选中的单元格
   @State private selectedCell: CellPosition | null = null;
 
@@ -135,8 +139,6 @@ struct OnlineGamePage {
           this.backToMainView() // 回到主菜单
         })
 
-
-
         Text(this.difficulty)
           .id('difficulty')
           .width('25%')
@@ -168,10 +170,8 @@ struct OnlineGamePage {
         .fontSize($r('app.float.title_normal_size'))
         .margin({top: $r('app.float.column_padding_top'), right: $r('app.float.column_padding_right')})
 
-
-
         // 游戏版的绘制
-        Column() {
+        Row() {
           // 在容器内部调用 @Builder 方法
           this.GameBoard()
         }
@@ -186,8 +186,9 @@ struct OnlineGamePage {
         .margin({top: 15})
         .height(px2vp(this.boardSideLength))
         .width(px2vp(this.boardSideLength))
-        .enabled(this.isPlaying ? true : false)
         .backgroundColor($r('app.color.sudoku_board_background'))
+        .enabled(this.isPlaying ? true : false)
+
 
 
         Row() {
@@ -211,13 +212,58 @@ struct OnlineGamePage {
           middle: { anchor: '__container__', align: HorizontalAlign.Center }
         }) // 它的顶部，对齐 hp_bar 的底部
         .margin({left: $r('app.float.column_padding_left'), right: $r('app.float.column_padding_right'), top: $r('app.float.column_padding_top')})
+        .height('10%') // 或者一个固定的 vp 值，例如 .height(150)
+        .enabled(this.isPlaying ? true : false)
+
+        GridRow({
+          columns: 3,
+          gutter: {
+            x: 10,
+            y: 10},
+          direction: GridRowDirection.Row
+        }) {
+          ForEach(this.operate_buttons, (operate: string) => {
+            GridCol() {
+              Button(
+                {
+                  type: ButtonType.Capsule,  stateEffect: true}
+              ){
+                this.operateBuild(operate)
+              }
+              .id(operate)
+              .fontColor(Color.Black)
+              .fontSize(18)
+              .buttonStyle(ButtonStyleMode.NORMAL)
+              .width('100%')
+              .clickEffect({level:ClickEffectLevel.LIGHT})
+              .onClick(() => {
+                switch (operate) {
+                  case "undo":
+                    this.clickUndoButton()
+                    break
+                  case "erase":
+                    this.clickEraseButton()
+                    break
+                  case "edit":
+                    this.clickEditButton()
+                    break
+                }
+              })
+            }
+          })
+        }
+        .id('operate_button')
+        .alignRules({top: {anchor: "keys", align: VerticalAlign.Bottom}})
+        .margin({
+          left: $r('app.float.column_padding_left'),
+          right: $r('app.float.column_padding_right'),
+          top: $r('app.float.column_padding_top')})
         .enabled(this.isPlaying ? true : false)
       } // end of RelativeContainer
-      .backgroundColor($r('app.color.view_background'))
       .width('100%')
       .height('100%')
     } // end of NavDestination
-    .backgroundColor($r('app.color.view_background'))
+    .backgroundColor($r('app.color.sudoku_board_background'))
     .hideTitleBar(true)
     .onReady((context: NavDestinationContext) => {
       this.onInit(context)
@@ -225,55 +271,98 @@ struct OnlineGamePage {
 
   }
 
+
+  @Builder
+  operateBuild(operate: string) {
+    Column() {
+      if(operate == "edit") {
+        Row() {
+          Badge({
+            value: this.editBadgeOn ? 'ON' : 'OFF',
+            style: {badgeColor: this.editBadgeColor, borderWidth: 0, color:Color.White},
+            position: BadgePosition.RightTop,
+          }) {
+            Image($r(`app.media.${operate}`))
+              .width('30%')
+              .alignRules({top: {anchor:'__container', align: VerticalAlign.Top},
+                bottom:{anchor:"__container__", align: VerticalAlign.Bottom}})
+              .margin({top: 5, bottom: 5})
+          }
+          .borderWidth(0)
+        }
+      }else {
+        Row() {
+          Image($r(`app.media.${operate}`))
+            .width('30%')
+            .alignRules({top: {anchor:'__container', align: VerticalAlign.Top},
+              bottom:{anchor:"__container__", align: VerticalAlign.Bottom}})
+            .margin({top: 5, bottom: 5})
+        }
+      }
+    }
+  }
+
   // 绘制可交互的游戏棋盘
   @Builder
   GameBoard() {
     Stack() {
-      this.buildOnlineGridLines()
+      this.buildOnlineGridLines();
       Grid() {
         ForEach(this.playerBoard, (row: number[], rowIndex: number) => {
           ForEach(row, (cellValue: number, colIndex: number) => {
             GridItem() {
-              Text(cellValue === 0 ? "" : cellValue.toString())
-                .width('100%').height('100%')
-                .fontSize(22).fontWeight(FontWeight.Bold)
-                .fontColor(
-                  this.puzzle[rowIndex][colIndex] !== 0 ? $r('app.color.bar_selected_color') :
-                  this.errorBoard[rowIndex][colIndex] ? Color.Red :
-                  Color.Blue)
-                .textAlign(TextAlign.Center)
-                .backgroundColor((Math.floor(rowIndex / 3) + Math.floor(colIndex / 3)) % 2 === 0 ? $r('app.color.sudoku_board_background') : $r('app.color.level_background'))
-                .border({ width: this.selectedCell?.row === rowIndex && this.selectedCell?.col === colIndex ? 3 : 0, color: Color.Orange })
-                .onClick(() => {
-                  if (!this.isPlaying)
-                    return; // 游戏暂停时不可操作
-                  // 获取当前点击格子的值
-                  const currentValue = this.playerBoard[rowIndex][colIndex];
+              // 【核心修改】使用 Stack 来叠放主数字和笔记
+              Stack() {
+                // 渲染主数字
+                Text(cellValue === 0 ? "" : cellValue.toString())
+                  .width('100%')
+                  .height('100%')
+                  .fontSize(22)
+                  .fontWeight(FontWeight.Bold)
+                  .textAlign(TextAlign.Center)
+                  .fontColor(
+                    this.puzzle[rowIndex][colIndex] !== 0 ? $r('app.color.bar_selected_color') :
+                      (this.errorBoard[rowIndex][colIndex] ? Color.Red : Color.Blue)
+                  )
 
-                  if (this.puzzle[rowIndex][colIndex] === 0) {
-                    this.selectedCell = { row: rowIndex, col: colIndex };
-
-                    if (currentValue !== 0) {
-                      this.highlightedNumber = currentValue;
-                    } else {
-                      // 如果点击的是一个纯空格，取消所有数字高亮
-                      this.highlightedNumber = 0;
-                    }
-                  } else {
-                    // 点击的是题目给出的初始数字
-                    this.selectedCell = null; // 取消对空格的选中框
-                    this.highlightedNumber = currentValue; // 高亮所有同类数字
+                // 【核心修改】如果主数字为空，且有笔记，则渲染笔记
+                if (cellValue === 0 && this.notes[rowIndex][colIndex]?.length > 0) {
+                  Grid() {
+                    ForEach(this.notes[rowIndex][colIndex], (noteValue:number) => {
+                      GridItem() {
+                        Text(noteValue.toString())
+                          .fontSize(8)// 笔记字体更小
+                          .fontColor($r('app.color.text_color_value_note'))
+                      }
+                    })
                   }
-
-                })
+                  .columnsTemplate('1fr 1fr 1fr')
+                  .rowsTemplate('1fr 1fr 1fr')
+                  .width('90%')
+                  .height('90%')
+                }
+              }
+              .backgroundColor((Math.floor(rowIndex / 3) + Math.floor(colIndex / 3)) % 2 === 0 ?
+              $r('app.color.sudoku_board_background') : $r('app.color.level_background'))
+              .border({
+                width: this.selectedCell?.row === rowIndex && this.selectedCell?.col === colIndex ? 3 : 0,
+                color: Color.Orange
+              })
+              .onClick(() => {
+                if (!this.isPlaying) return;
+                if (this.puzzle[rowIndex][colIndex] === 0) {
+                  this.selectedCell = { row: rowIndex, col: colIndex };
+                }
+              })
             }
           })
         })
       }
       .columnsTemplate('1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr')
       .rowsTemplate('1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr')
+      .aspectRatio(1)
+      .border({ width: 2, color: $r('app.color.text_color_keys') })
     }
-    .aspectRatio(1).border({ width: 2, color: $r('app.color.text_color_keys') })
   }
 
   // 绘制数字输入键盘
@@ -284,14 +373,12 @@ struct OnlineGamePage {
         GridItem() {
           Button() {
             Text(num.toString())
+              .fontColor("#FFFAF0")
               .fontSize(24)
-              .fontWeight(FontWeight.Medium)
-              .fontColor($r('app.color.text_color_keys'))
           }
           .type(ButtonType.Circle).
           width('90%').
-          aspectRatio(1).
-          backgroundColor(Color.White)
+          aspectRatio(1)
           .onClick(() => {
             if (this.selectedCell && this.isPlaying) {
               // 直接传递 number 类型的 num
@@ -321,7 +408,10 @@ struct OnlineGamePage {
       Grid() {
         ForEach(Array.from({ length: 9 }), () => {
           GridItem() {
-            Column().width('100%').height('100%').border({ width: 2, color: $r('app.color.text_color_keys') })
+            Column().
+            width('100%').
+            height('100%').
+            border({ width: 2})
           }
         })
       }
@@ -331,46 +421,80 @@ struct OnlineGamePage {
   }
 
 
-  updatePlayerBoard(row: number, col: number, valueNum: number) {
-    if (!this.isPlaying || this.puzzle[row][col] !== 0) {
-      // 如果游戏暂停，或者点击的不是空格，则不执行任何操作
+  private updatePlayerBoard(row: number, col: number, valueNum: number) {
+    if (!this.isPlaying || this.puzzle[row][col] !== 0) return;
+
+    if (this.editMode) {
+      // --- 笔记模式 ---
+      const newNotes = JSON.parse(JSON.stringify(this.notes)) as number[][][];
+      const cellNotes = newNotes[row][col];
+      const noteIndex = cellNotes.indexOf(valueNum);
+      if (noteIndex > -1) {
+        cellNotes.splice(noteIndex, 1);
+      } else {
+        cellNotes.push(valueNum);
+        cellNotes.sort();
+      }
+      this.notes = newNotes;
+    } else {
+      // --- 填数模式 ---
+      const oldValue = this.playerBoard[row][col];
+      if (oldValue === valueNum) return;
+
+      this.historyStack.push({ row, col, oldValue, newValue: valueNum });
+
+      const newBoard = [...this.playerBoard];
+      newBoard[row][col] = valueNum;
+      this.playerBoard = newBoard;
+
+      // 填数后清除笔记
+      if (this.notes[row][col]?.length > 0) {
+        const newNotes = JSON.parse(JSON.stringify(this.notes)) as number[][][];
+        newNotes[row][col] = [];
+        this.notes = newNotes;
+      }
+
+      // 错误检查和胜利检查逻辑
+      this.checkWinAndSaveRecord();
+    }
+  }
+
+  private clickUndoButton() {
+    if (this.historyStack.length === 0) {
+      promptAction.showToast({ message: "没有可撤销的操作" });
       return;
     }
-
-    // 创建 errorBoard 的副本以触发UI刷新
-    const newErrorBoard = [...this.errorBoard];
-
-    if (valueNum !== this.solution[row][col]) {
-      // 填错了
-      newErrorBoard[row][col] = true; // 在错误板上标记为 true
-      if (this.errorCount > 0) {
-        this.errorCount--;
-        this.hpStates[this.errorCount] = false;
-        promptAction.showToast({ message: `错误！剩余机会：${this.errorCount}` });
-        if (this.errorCount <= 0) {
-          this.stopTimer(); this.isPlaying = false;
-          promptAction.showDialog({ title: '游戏结束', message: '您已用完所有机会！' });
-        }
-      }
-    } else {
-      // 填对了
-      newErrorBoard[row][col] = false; // 确保错误标记被清除
-    }
-
-    this.errorBoard = newErrorBoard;
-
-    // 1. 创建一个新的数组副本
+    const lastMove = this.historyStack.pop()!;
     const newBoard = [...this.playerBoard];
-
-    // 2. 在新副本上进行修改
-    newBoard[row][col] = valueNum;
-
-    // 3. 将 @State 变量指向这个全新的副本
+    newBoard[lastMove.row][lastMove.col] = lastMove.oldValue;
     this.playerBoard = newBoard;
+  }
 
-    // 【核心修改】在这里调用胜利检查
-    // 在棋盘更新后，立即检查游戏是否已经结束
-    this.checkWinAndSaveRecord();
+  private clickEraseButton() {
+    if (this.selectedCell) {
+      const row:number = this.selectedCell.row;
+      const col:number = this.selectedCell.col;
+      if (this.puzzle[row][col] !== 0)
+        return;
+
+      if (this.playerBoard[row][col] !== 0) {
+        this.updatePlayerBoard(row, col, 0);
+        promptAction.showToast({ message: "不可擦除!" });
+      }
+      if (this.notes[row][col]?.length > 0) {
+        const newNotes = JSON.parse(JSON.stringify(this.notes)) as number[][][];
+        newNotes[row][col] = [];
+        this.notes = newNotes;
+        promptAction.showToast({ message: "擦除成功" });
+      }
+    }
+  }
+
+  private clickEditButton() {
+    this.editMode = !this.editMode;
+    this.editBadgeOn = this.editMode;
+    this.editBadgeColor = this.editBadgeOn ? $r('app.color.operate_edit_on') : $r('app.color.operate_edit_off');
+    promptAction.showToast({ message: this.editMode ? "笔记模式 ON" : "笔记模式 OFF" });
   }
 
   // 暂停
@@ -385,12 +509,6 @@ struct OnlineGamePage {
     this.timerId =setInterval(() => {
       this.cumulativeTime++
     }, 1000)
-  }
-
-
-  updateValue() {
-    console.log("收到子view 更新 inputValue", this.inputValue)
-    // this.inputValue = value
   }
 
   // 格式化时间
@@ -441,6 +559,12 @@ struct OnlineGamePage {
 
       this.playerBoard = JSON.parse(JSON.stringify(params.puzzle));
       this.errorBoard = Array(9).fill(0).map(() => Array(9).fill(false));
+
+      // 【新增】初始化一个空的 9x9xN 的笔记数组
+      this.notes = Array(9).fill(0).map(() => Array(9).fill(0).map(() => []));
+
+      // 【新增】每次新游戏开始时，清空历史记录
+      this.historyStack = [];
 
       this.startTimer();
     } else {
@@ -565,10 +689,21 @@ struct OnlineGamePage {
     })
   }
 
-  // 日志级别信息
   undoCallback(changedPropertyName: string) {
-    LogUtil.debug("undoCallBack this.undid : " + this.undid)
   }
 
+  gameDataChange(changedPropertyName: string) {
+  }
 
+  listenerError(changedPropertyName: string) {
+  }
+
+  updateValue(changedPropertyName: string) {
+  }
+
+  listenerCorrect(changedPropertyName: string) {
+  }
+
+  listenerRestart(changedPropertyName: string) {
+  }
 }

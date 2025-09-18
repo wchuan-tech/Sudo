@@ -37,7 +37,7 @@ struct SudokuView {
   inputValue: string = "Z";
 
   // 操作按钮
-  @State operate_buttons: string[] = ["undo", "erase", "edit", "hint"]
+  @State operate_buttons: string[] = ["undo", "erase", "edit"]
 
   // 数独板数据
   @State values: string[] = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
@@ -62,9 +62,11 @@ struct SudokuView {
   @State
   editOn: boolean = false
 
-  @State editBadgeColor: Resource = this.editBadgeOn ? $r('app.color.operate_edit_on') : $r('app.color.operate_edit_off')
+  @State
+  editBadgeColor: Resource = this.editBadgeOn ? $r('app.color.operate_edit_on') : $r('app.color.operate_edit_off')
 
-  @State hintClicked: boolean = false
+  @State
+  hintClicked: boolean = false
 
     // 撤回
   @State
@@ -334,7 +336,7 @@ struct SudokuView {
         .fontSize($r('app.float.title_normal_size'))
         .margin({top: $r('app.float.column_padding_top'), right: $r('app.float.column_padding_right')})
 
-        BoardView({inputValue: this.inputValue, hintClicked: this.hintClicked,
+        BoardView({inputValue: this.inputValue,
           editOn: this.editOn, undid: this.undid, erased: this.erased, gotError: this.gotError,
           restarted: this.restarted, gotCorrectValue: this.gotCorrectValue, cells: this.cells})
           .id("sudoku_board")
@@ -393,9 +395,9 @@ struct SudokuView {
         .enabled(this.isPlaying ? true : false)
 
 
-        // 各种操作按键  擦除 提示 笔记....
+        // 各种操作按键  擦除 提示 笔记
         GridRow({
-          columns: 4,
+          columns: 3,
           gutter: {
             x: 10,
             y: 10},
@@ -403,7 +405,10 @@ struct SudokuView {
         }) {
           ForEach(this.operate_buttons, (operate: string) => {
             GridCol() {
-              Button({type: ButtonType.Capsule,  stateEffect: true}){
+              Button(
+                {
+                  type: ButtonType.Capsule,  stateEffect: true}
+              ){
                 this.operateBuild(operate)
               }
               .id(operate)
@@ -416,9 +421,6 @@ struct SudokuView {
                 switch (operate) {
                   case "undo":
                     this.clickUndoButton()
-                    break
-                  case "hint":
-                    this.clickHintButton()
                     break
                   case "edit":
                     this.clickEditButton()
@@ -496,23 +498,7 @@ struct SudokuView {
   @Builder
   operateBuild(operate: string) {
     Column() {
-      if (operate === "hint") {
-        Row() {
-          Badge({
-            count: this.hintCount,
-            style: {
-              badgeColor: this.hintCount > 0 ? $r('app.color.operate_badge_hint') : $r('app.color.operate_badge_hint_not_enough') ,
-              borderWidth: 0, color:Color.White},
-            position: BadgePosition.RightTop,
-          }) {
-            Image($r(`app.media.${operate}`))
-              .width('30%')
-              .alignRules({top: {anchor:'__container', align: VerticalAlign.Top},
-              bottom:{anchor:"__container__", align: VerticalAlign.Bottom}})
-              .margin({top: 5, bottom: 5})
-          }
-        }
-      } else if(operate == "edit") {
+       if(operate == "edit") {
         Row() {
           Badge({
             value: this.editBadgeOn ? 'ON' : 'OFF',
@@ -681,9 +667,6 @@ struct SudokuView {
   initCellMap(mapString: string) {
     LogUtil.debug("initCellMap mapString " + mapString)
     this.cells = DataUtil.jsonString2Map<number, Cell>(mapString)
-    // this.cells.forEach((value: Cell, key: number) => {
-    //   LogUtil.debug(`number " ${key} , value : ${value._value}`)
-    // })
   }
 
   listenerCorrect(changedPropertyName: string) {
@@ -720,13 +703,6 @@ struct SudokuView {
   }
 
   savaGameData() {
-    // PreferencesUtil.putSync("ErrorCount", this.errorCount)
-    // PreferencesUtil.putSync("HintCount", this.hintCount)
-    // PreferencesUtil.putSync("Level", this.level)
-    // PreferencesUtil.putSync("Difficulty", this.difficulty)
-    // let dataString = DataUtil.map2JsonString(this.cells)
-    // LogUtil.debug("dataString : " + dataString)
-    // PreferencesUtil.putSync("Data", dataString)
     this.curLevelInfo.cumulativeTime = this.cumulativeTime
     LogUtil.debug("savaGameData time : " + this.curLevelInfo.cumulativeTime)
     LevelInfoApi.updateData(this.curLevelInfo, (result: number) => {
