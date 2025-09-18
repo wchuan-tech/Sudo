@@ -1,5 +1,5 @@
-import ColumnInfo from '../data/ColumnInfo';
-import {LogUtil} from '../utils/LogUtil';
+import ColumnInfo from '../ColumnInfo';
+import {LogUtil} from '../../utils/LogUtil';
 
 class TableHelper {
   createTableSql(tableName: string, columns: Array<ColumnInfo>): string {

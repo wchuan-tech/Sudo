@@ -5,12 +5,12 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { mediaquery, window } from '@kit.ArkUI';
 import { PreferencesUtil } from '../utils/PreferencesUtil';
 import { AppUtil } from '../utils/AppUtil';
-import RdbUtils from '../database/RdbUtils';
+import RdbUtils from '../data/database/RdbUtils';
 import ColumnInfo from '../data/ColumnInfo';
 import { LogUtil } from '../utils/LogUtil';
 import { CommonConstants } from '../constants/CommonConstants';
 import {  emitter } from '@kit.BasicServicesKit';
-import { GlobalContext } from '../constants/GlobalContext';
+import { GlobalContext } from '../data/GlobalContext';
 
 import { DB_CONFIG, TBL_GAME_RECORDS, TBL_LEVEL_INFO
   ,TBL_LEVEL} from '../constants/DatabaseConstants';

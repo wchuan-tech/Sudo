@@ -4,7 +4,7 @@ import { LogUtil } from '../utils/LogUtil';
 import { Cell } from '../data/Cell';
 import { DataUtil } from '../utils/DataUtil';
 import { LevelInfo } from '../data/Levelnfo';
-import LevelInfoApi from '../database/LevelInfoApi';
+import LevelInfoApi from '../data/database/LevelInfoApi';
 import { Difficulty } from '../constants/DifficultyConstants';
 
 

@@ -1,8 +1,8 @@
 import { relationalStore } from '@kit.ArkData';
-import { LevelInfo } from '../data/Levelnfo';
-import { LogUtil } from '../utils/LogUtil';
+import { LevelInfo } from '../Levelnfo';
+import { LogUtil } from '../../utils/LogUtil';
 import RdbUtils from './RdbUtils';
-import { CommonConstants as Const } from '../constants/CommonConstants'
+import { CommonConstants as Const } from '../../constants/CommonConstants'
 
 class LevelInfoApi {
 

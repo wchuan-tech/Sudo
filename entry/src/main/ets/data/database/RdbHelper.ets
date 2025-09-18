@@ -1,5 +1,5 @@
 import { relationalStore } from '@kit.ArkData';
-import ColumnInfo from '../data/ColumnInfo';
+import ColumnInfo from '../ColumnInfo';
 
 export interface RdbHelper {
 

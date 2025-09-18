@@ -29,7 +29,7 @@ import { RawUtils } from '../utils/RawUtils';
 import { DataUtil } from '../utils/DataUtil';
 import { LevelInfo } from '../data/Levelnfo';
 import { ToastUtil } from '../utils/ToastUtil';
-import LevelInfoApi from '../database/LevelInfoApi';
+import LevelInfoApi from '../data/database/LevelInfoApi';
 import { StyleConstants } from '../constants/StyleConstants';
 import { Header } from './views/Header';
 import { BreakpointConstants } from '../constants/BreakpointConstants';

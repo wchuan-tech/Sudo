@@ -1,12 +1,12 @@
 import { relationalStore } from '@kit.ArkData';
 import tableHelper from './TableHelper';
 import { RdbHelper } from './RdbHelper';
-import ColumnInfo from '../data/ColumnInfo';
-import { LogUtil } from '../utils/LogUtil';
-import { GlobalContext } from '../constants/GlobalContext'; // 假设已创建
+import ColumnInfo from '../ColumnInfo';
+import { LogUtil } from '../../utils/LogUtil';
+import { GlobalContext } from '../GlobalContext'; // 假设已创建
 
 import { DB_CONFIG, TBL_GAME_RECORDS, TBL_LEVEL_INFO
-,TBL_LEVEL} from '../constants/DatabaseConstants';
+,TBL_LEVEL} from '../../constants/DatabaseConstants';
 
 export class RdbHelperImp implements RdbHelper {
 

@@ -1,7 +1,7 @@
 import { SegmentButtonItemTuple, SegmentButtonOptions, SegmentButton } from "@kit.ArkUI"
 import { CommonConstants } from "../../constants/CommonConstants"
 import { StyleConstants } from "../../constants/StyleConstants"
-import LevelInfoApi from "../../database/LevelInfoApi"
+import LevelInfoApi from "../../data/database/LevelInfoApi"
 import { Difficulty } from "../../constants/DifficultyConstants"
 import { LevelInfo } from "../../data/Levelnfo"
 import { LogUtil } from "../../utils/LogUtil"
@@ -63,18 +63,6 @@ export struct RankView {
               .height(25)
               .padding({ left: 0 })
             Text(`${levelInfo.errorCount}`)
-              .opacity(0.38)
-              .padding({ left: CommonConstants.Rank_Padding })
-              .fontColor($r('app.color.item_name_color'))
-              .fontSize(16)
-
-
-          // Blank()/
-            Image($r('app.media.item_rank_hint'))
-              .width(16)
-              .height(16)
-              .margin({left: CommonConstants.PADDING})
-            Text(`${levelInfo.hintCount}`)
               .opacity(0.38)
               .padding({ left: CommonConstants.Rank_Padding })
               .fontColor($r('app.color.item_name_color'))

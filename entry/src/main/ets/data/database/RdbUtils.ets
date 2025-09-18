@@ -1,8 +1,8 @@
 import { relationalStore } from '@kit.ArkData';
-import ColumnInfo from '../data/ColumnInfo';
+import ColumnInfo from '../ColumnInfo';
 import { RdbHelper } from './RdbHelper';
 import { RdbHelperImp } from './RdbHelperImp';
-import { LogUtil } from '../utils/LogUtil';
+import { LogUtil } from '../../utils/LogUtil';
 
 let dbContext: Context;
 let mDatabaseName: string ;
