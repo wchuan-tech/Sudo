@@ -51,21 +51,15 @@ interface PuzzleDisplayParam {
 @Entry
 @Component
 struct Index {
-
   // 在线模式
   @State private gameViewModel: GameNetworkViewModel = new GameNetworkViewModel();
-  callbackId: number = 0;
-
   @Provide('navPathStack')
   pathStack: NavPathStack = new NavPathStack()
-
-
   private breakpointSystem: BreakpointSystem = new BreakpointSystem();
   @StorageProp('currentBreakpoint') currentBreakpoint: string = BreakpointConstants.BREAKPOINT_SM;
   @StorageLink('deviceHeight') deviceHeight: number = 0;
   @State message: string = 'Hello World';
   private boardSideLength = display.getDefaultDisplaySync().width - vp2px(5) * 2;
-
   private vp = this.boardSideLength / display.getDefaultDisplaySync().width * 100
   private marginTop = display.getDefaultDisplaySync().width * 0.25;
   highVp: number = px2vp(this.boardSideLength)
@@ -90,28 +84,21 @@ struct Index {
     selectedBackgroundColor: $r('app.color.segment_select_color'),
     backgroundBlurStyle: BlurStyle.BACKGROUND_THICK
   })
-  
   @State
   @Watch('onTabChange')
   tabSelectedIndexes: number[] = [0]
-
   @State isScanning: boolean = false;
   @State foundDevices: ble.ScanResult[] = [];
-
   private context = getContext(this) as common.UIAbilityContext;
-
-  @StorageLink('colorMode')
-  @Watch("listenerColorModeChange")
-  colorMode: ConfigurationConstant.ColorMode | undefined = this.context.config.colorMode;
 
   aboutToAppear(): void {
     // AppStorage.setOrCreate("PathStack", this.pathStack)
     LogUtil.debug("Index aboutToAppear")
     this.breakpointSystem.register();
-    this.initData(this.curDifficulty)
-    this.subscribeConfigurationUpdate()
 
-    this.gameViewModel.loadRemainingApiCall(); // 每次页面显示时都刷新
+    this.gameViewModel.loadRemainingApiCall();
+    this.initData(this.curDifficulty)
+
   }
 
   aboutToDisappear(): void {
@@ -223,14 +210,14 @@ struct Index {
         .fillColor($r('app.color.bar_selected_color')) // 让图标使用主题色
 
       // 2. 功能名称
-      Text("蓝牙") // 您可以修改为您想要的功能名称
+      Text("蓝牙")// 您可以修改为您想要的功能名称
         .fontSize($r('app.float.description_font_size'))
         .fontColor($r('app.color.item_name_color'))
 
       Blank() // 占位符，将右侧箭头推到最右边
 
       // 3. 右侧的 "更多" 箭头图标
-      Image($r("app.media.edit")) // 假设您有一个向右的箭头图标
+      Image($r("app.media.edit"))// 假设您有一个向右的箭头图标
         .width(16).height(16)
         .fillColor($r('app.color.item_name_color'))
     }
@@ -275,7 +262,6 @@ struct Index {
     })
   }
 
-
   @Builder
   NavigationMenus() {
     Row() {
@@ -289,7 +275,6 @@ struct Index {
 
     }
   }
-
 
   @Builder
   CustomToolbar() {
@@ -349,8 +334,6 @@ struct Index {
     .justifyContent(FlexAlign.Center)
   }
 
-
-
   // =================================================================
   // 这个方法职责很清晰：触发网络请求。
   // =================================================================
@@ -407,8 +390,8 @@ struct Index {
         // =======================================================
         this.pathStack.pushPathByName(
           "OnlineGamePage", // 目标页面
-          params,           // 传递的参数
-          () => {           // onPop 回调函数
+          params, // 传递的参数
+          () => { // onPop 回调函数
             LogUtil.debug("Popped back from OnlineGamePage.");
             // 在这里可以执行任何您需要的操作，比如刷新主页数据、显示提示等。
             // 例如，我们可以清空 ViewModel 中的数据，以便下次重新获取
@@ -420,7 +403,6 @@ struct Index {
       }
     })
   }
-
 
   @Builder
   buildHeader() {
@@ -438,7 +420,7 @@ struct Index {
 
     RelativeContainer() {
       // BoardView(inpu)
-      this.buildLevels(this.levelInfos)
+      this.buildLevels()
     }
     .id("layout_board")
     .border({ width: 1, color: Color.Gray })
@@ -453,7 +435,7 @@ struct Index {
   }
 
   @Builder
-  buildLevels(levelInfos: Array<LevelInfo>) {
+  buildLevels() {
     RelativeContainer() {
       Grid() {
         ForEach(this.levelInfos, (info: LevelInfo) => {
@@ -494,15 +476,11 @@ struct Index {
   startGame(info: LevelInfo) {
     let difficulty: string = info.difficulty
     let level: number = info.level;
-    let errorCount: number = info.errorCount;
-    let hintCount: number = info.hintCount;
-    let puzzle: string[][], solution: string[][]
     let data = ""
     if (info.data == "") {
       LogUtil.debug(`difficulty : ${difficulty}, level : ${level}`)
       let content = RawUtils.readRawConfigData(difficulty, level)
       if (content != null) {
-        // LogUtil.debug("read " + difficulty + " leve " + level + " content : " + content)
         let splitContent: string[] = content.split('solution：').map(part => part.trim());
         let puzzlePart: string = splitContent[0];
         let solutionPart: string = splitContent[1];
@@ -562,8 +540,7 @@ struct Index {
     return cells
   }
 
-  onTabChange(changedPropertyName: string) {
-
+  onTabChange() {
     LogUtil.debug((`选中按钮索引 -- ${this.tabSelectedIndexes}`))
     this.curDifficulty = this.difficultyArray[this.tabSelectedIndexes[0]]
     this.initData(this.curDifficulty)
@@ -605,33 +582,10 @@ struct Index {
         this.context.getApplicationContext().setColorMode(mode)
       })
     },
-    onMemoryLevel(level){
+    onMemoryLevel(level) {
       console.log(`onMemoryLevel level: ${JSON.stringify(level)}`);
     }
   };
 
-  subscribeConfigurationUpdate(): void {
-    let systemLanguage: string | undefined = this.context.config.language; // 获取系统当前语言
 
-    // 1.获取ApplicationContext
-    let applicationContext = this.context.getApplicationContext();
-
-    // 2.通过applicationContext订阅环境变量变化
-    try {
-      this.callbackId = applicationContext.on('environment', this.envCallback);
-    } catch (err) {
-      // let code = (err as BusinessError).code;
-      // let message = (err as BusinessError).message;
-      // hilog.error(DOMAIN_NUMBER, TAG, `Failed to register applicationContext. Code is ${code}, message is ${message}`);
-    }
-  }
-
-  listenerColorModeChange(changedPropertyName: string) {
-    LogUtil.debug("listenerColorModeChange colorMode = " + this.colorMode)
-  }
-}
-
-
-function MiniView() {
-  throw new Error('Function not implemented.');
 }

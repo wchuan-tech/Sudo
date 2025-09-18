@@ -4,7 +4,6 @@ import { PreferencesUtil } from '../utils/PreferencesUtil';
 import { ToastUtil } from '../utils/ToastUtil';
 
 // 使用 @Observed 来创建可观察对象
-// 在新版本的 SDK 中，这比 ObservableObject + @Published 更推荐
 @Observed
 export class GameNetworkViewModel {
   // 当这个属性变化时，会通知绑定的UI刷新
@@ -30,7 +29,7 @@ export class GameNetworkViewModel {
       usedCount = await PreferencesUtil.getNumber(ApiConstants.API_CALL_COUNT_KEY);
     }
 
-    this.remainingApiCall = ApiConstants.JUHE_API_DAILY_LIMIT - usedCount;
+    this.remainingApiCall = Math.max(0, ApiConstants.JUHE_API_DAILY_LIMIT - usedCount);
   }
 
   // 方法：用于获取在线数独

@@ -58,6 +58,8 @@ class ApiService {
         // 次数已超限
         LogUtil.warn(`API daily limit of ${ApiConstants.JUHE_API_DAILY_LIMIT} reached.`);
         return false;
+      }else{
+        return true;
       }
     } else {
       // 如果是新的一天，重置计数器

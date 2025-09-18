@@ -19,6 +19,6 @@ export class ApiConstants {
   static readonly API_CALL_DATE_KEY = 'api_call_date'; // 存储上次调用API的日期 (格式: YYYY-MM-DD)
   static readonly API_CALL_COUNT_KEY = 'api_call_count'; // 存储当天已调用次数
 
-  // 假设聚合数据每天的免费次数是 50 次
+  // 聚合数据每天的免费次数是 50 次
   static readonly JUHE_API_DAILY_LIMIT = 50;
 }
