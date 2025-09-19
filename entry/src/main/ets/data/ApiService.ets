@@ -1,7 +1,6 @@
 import http from '@ohos.net.http';
 import { LogUtil } from '../utils/LogUtil';
 import { ApiConstants } from '../constants/ApiConstants';
-import { CommonConstants } from '../constants/CommonConstants';
 import { PreferencesUtil } from '../utils/PreferencesUtil';
 
 // =================================================================
@@ -200,9 +199,5 @@ class ApiService {
     }
   }
 }
-
-// =================================================================
-// 3. 导出单例
-// =================================================================
 
 export const apiService = new ApiService();

@@ -1,7 +1,6 @@
 import { SudokuData } from '../data/SudokuModels';
 import { LevelInfo } from '../data/Levelnfo';
 import { LogUtil } from '../utils/LogUtil';
-import LevelInfoApi from '../data/database/LevelInfoApi';
 import { AlertDialog, display,promptAction } from '@kit.ArkUI';
 import { GameRecordRepository} from '../data/database/GameRecordRepository';
 
@@ -346,7 +345,7 @@ struct OnlineGamePage {
         ForEach(this.playerBoard, (row: number[], rowIndex: number) => {
           ForEach(row, (cellValue: number, colIndex: number) => {
             GridItem() {
-              // 【核心修改】使用 Stack 来叠放主数字和笔记
+              // 使用 Stack 来叠放主数字和笔记
               Stack() {
                 // 渲染主数字
                 Text(cellValue === 0 ? "" : cellValue.toString())
@@ -584,7 +583,7 @@ struct OnlineGamePage {
 
 
 
-  // 【新增方法 1】检查数独是否已正确完成
+  // 检查数独是否已正确完成
   private isSudokuComplete(): boolean {
     for (let r = 0; r < 9; r++) {
       for (let c = 0; c < 9; c++) {

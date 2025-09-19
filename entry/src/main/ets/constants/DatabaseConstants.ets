@@ -1,5 +1,3 @@
-// src/main/ets/common/constants/DatabaseConstants.ts
-
 /**
  * 数据库全局常量
  */
@@ -31,7 +29,7 @@ export abstract class TBL_GAME_RECORDS {
 }
 
 /**
- * 'level_info' 表的常量定义 (示例)
+ * 'level_info' 表的常量定义
  */
 export abstract class TBL_LEVEL_INFO {
   // 表名

@@ -5,6 +5,11 @@ import { PreferencesUtil } from "../../utils/PreferencesUtil"
 import { DividerTmp } from "./DividerTmp"
 import { StyleConstants } from "../../constants/StyleConstants"
 
+@Builder
+export function DisplayModeSettingBuilder() {
+  DisplayModeSetting()
+}
+
 @Preview
 @Component
 export struct DisplayModeSetting {
@@ -13,10 +18,9 @@ export struct DisplayModeSetting {
   @State isDarkMode: boolean = this.curColorMode == 1 ? false : true
   @State followSystem: boolean = PreferencesUtil.getBooleanSync(CommonConstants.FollowSystem)
   @State daySelected: boolean = true
-  // @State toDoData: ToDo[] = []
+
   @State isEditMode: boolean = false
-  // @State selectedItems: Array[] = []
-  private availableThings: string[] = ['普通模式', '深夜模式']
+
   @State egDivider: DividerTmp = new DividerTmp(1, CommonConstants.PADDING, CommonConstants.PADDING
     , getContext(this).resourceManager.getColorSync($r('app.color.divider_color')))
 
@@ -168,7 +172,3 @@ export struct DisplayModeSetting {
   }
 }
 
-@Builder
-export function DisplayModeSettingBuilder() {
-  DisplayModeSetting()
-}

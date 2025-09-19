@@ -1,15 +1,9 @@
 import {
   display,
-  LengthMetrics,
   SegmentButton,
   SegmentButtonOptions,
-  SegmentButtonItemOptionsArray,
   SegmentButtonItemTuple,
-  SymbolGlyphModifier
 } from '@kit.ArkUI';
-
-
-import { geoLocationManager } from '@kit.LocationKit'
 
 // 蓝牙模块
 import { ble } from '@kit.ConnectivityKit';
@@ -43,11 +37,6 @@ import { CommonConstants } from '../constants/CommonConstants';
 import { promptAction } from '@kit.ArkUI'; // 导入 promptAction 用于显示对话框
 
 
-
-interface PuzzleDisplayParam {
-  puzzle: number[][];
-}
-
 @Entry
 @Component
 struct Index {
@@ -60,8 +49,6 @@ struct Index {
   @StorageLink('deviceHeight') deviceHeight: number = 0;
   @State message: string = 'Hello World';
   private boardSideLength = display.getDefaultDisplaySync().width - vp2px(5) * 2;
-  private vp = this.boardSideLength / display.getDefaultDisplaySync().width * 100
-  private marginTop = display.getDefaultDisplaySync().width * 0.25;
   highVp: number = px2vp(this.boardSideLength)
   @State
   selectedIndex: number = 0
@@ -89,7 +76,6 @@ struct Index {
   tabSelectedIndexes: number[] = [0]
   @State isScanning: boolean = false;
   @State foundDevices: ble.ScanResult[] = [];
-  private context = getContext(this) as common.UIAbilityContext;
 
   aboutToAppear(): void {
     // AppStorage.setOrCreate("PathStack", this.pathStack)
@@ -109,10 +95,10 @@ struct Index {
   initData(difficulty: string) {
     LevelInfoApi.queryList(difficulty, (result: LevelInfo[]) => {
       this.levelInfos = result
-      // LogUtil.debug("queryList callback length = " + result.length)
+
       let lastLevelCompleted = false
-      this.levelInfos.forEach((value: LevelInfo, index: number) => {
-        // LogUtil.debug('levelInfo : ' + value.toString() + ' index : ' + index)
+      this.levelInfos.forEach((value: LevelInfo) => {
+
         if (value.locked && lastLevelCompleted) {
           value.locked = false
         }
@@ -133,7 +119,7 @@ struct Index {
           let id = this.getIdStart(difficulty) + index
           let info = new LevelInfo(id, difficulty, index + 1, 5, 5, locked, completed, "", 0)
           this.levelInfos.push(info)
-          // LogUtil.debug("info locked = " + info.locked)
+
           LevelInfoApi.insertData(info, (result: number) => {
             LogUtil.debug("insertData result = " + result)
           })
@@ -334,9 +320,8 @@ struct Index {
     .justifyContent(FlexAlign.Center)
   }
 
-  // =================================================================
-  // 网络请求。
-  // =================================================================
+
+  // 网络请求
   @Builder
   onlineModeItem() {
     Row() {
@@ -393,7 +378,7 @@ struct Index {
             // 执行需要的操作，比如刷新主页数据、显示提示等。
             // 清空 ViewModel 中的数据，以便下次重新获取
             this.gameViewModel.juhePuzzle = null;
-            promptAction.showToast({ message: "欢迎回来！" });
+            promptAction.showToast({ message: "Welcome Back!" });
           }
         );
 
@@ -504,8 +489,8 @@ struct Index {
       LogUtil.debug("update Level Table result : " + result)
     })
     // this.pathStack.pushPath({name: 'PageSudoku', param: info})
-    let pathInfo: NavPathInfo = new NavPathInfo('PageSudoku', info
-      , (popInfo: PopInfo) => {
+    new NavPathInfo('PageSudoku', info
+      , () => {
         LogUtil.debug("pop callback")
         this.initData(this.curDifficulty)
       })

@@ -1,6 +1,3 @@
-/**
- * Constants for common style.
- */
 export class StyleConstants {
   /**
    * Component width percentage: 100%.
@@ -11,5 +8,4 @@ export class StyleConstants {
    * Component height percentage: 100%.
    */
   static readonly FULL_HEIGHT: string = '100%';
-
 }

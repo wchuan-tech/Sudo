@@ -65,16 +65,12 @@ struct SudokuView {
   @State
   editBadgeColor: Resource = this.editBadgeOn ? $r('app.color.operate_edit_on') : $r('app.color.operate_edit_off')
 
-  @State
-  hintClicked: boolean = false
 
     // 撤回
   @State
-  @Watch("undoCallback")
   undid:boolean = false
 
   @State
-  // @Watch("eraseCallback")
   erased:boolean = false
 
   @State
@@ -91,7 +87,6 @@ struct SudokuView {
   gotCorrectValue: string = "Z"
 
   @State
-  @Watch("listenerRestart")
   restarted: boolean = false
 
   @State
@@ -104,8 +99,6 @@ struct SudokuView {
   @State
   errorCount: number = 5
 
-  @State
-  hintCount: number = 5
 
   @State
   curLevelInfo: LevelInfo = new LevelInfo(0, "newbie", 1, 5, 5, true, false, "", 0)
@@ -170,8 +163,7 @@ struct SudokuView {
     this.isPlaying = true
     this.buttonIcon = this.isPlaying ? $r('app.media.pause') : $r('app.media.play')
     this.remainCount = [16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16]
-    // this.hpStates = [true, true, true, true, true]
-    this.hintCount = 5
+
     this.errorCount = 5
     this.reInitGameData()
 
@@ -180,7 +172,7 @@ struct SudokuView {
     this.initRemainCount()
     this.startTimer()
     this.curLevelInfo.errorCount = this.errorCount
-    this.curLevelInfo.hintCount = this.hintCount
+
     this.curLevelInfo.data = DataUtil.map2JsonString(this.cells)
     this.savaGameData()
     this.initCellMap(this.curLevelInfo.data)
@@ -279,7 +271,7 @@ struct SudokuView {
         .width('10%')
         .height('5%')
         .margin({top: $r('app.float.column_padding_top'), right: $r('app.float.column_padding_right')})
-        .onClick(event => {
+        .onClick(() => {
           this.togglePlayPause()
           this.dialogControllerConfirm.open()
         })
@@ -422,11 +414,11 @@ struct SudokuView {
                   case "undo":
                     this.clickUndoButton()
                     break
-                  case "edit":
-                    this.clickEditButton()
-                    break
                   case "erase":
                     this.clickEraseButton()
+                    break
+                  case "edit":
+                    this.clickEditButton()
                     break
                 }
               })
@@ -458,15 +450,15 @@ struct SudokuView {
   onInit(context: NavDestinationContext) {
     this.pathStack = context.pathStack
     this.curLevelInfo = this.pathStack.getParamByName('PageSudoku')[0] as LevelInfo
-    // let param:GameData = this.pathStack.getParamByName('PageSudoku')[0] as GameData
+
     let stringDifficulty = `app.string.difficulty_${this.curLevelInfo.difficulty}`
     LogUtil.debug("stringDifficulty = " + stringDifficulty)
     LogUtil.debug("this.curLevelInfo.data = " + this.curLevelInfo.data)
-    // this.difficulty = getContext(this).resourceManager.getStringSync($r(stringDifficulty))
+
     this.cumulativeTime = this.curLevelInfo.cumulativeTime
     this.level = this.curLevelInfo.level
     this.levelName = `第${this.curLevelInfo.level}关`
-    this.hintCount = this.curLevelInfo.hintCount
+
     this.initTextDifficulty(this.curLevelInfo.difficulty)
     this.initCellMap(this.curLevelInfo.data)
     this.initRemainCount();
@@ -475,7 +467,6 @@ struct SudokuView {
   }
 
   initTextDifficulty(difficulty: string) {
-    let str: string = ""
     switch (difficulty) {
       case Difficulty.Newbie:
         this.difficulty = getContext(this).resourceManager.getStringSync($r('app.string.difficulty_newbie'))
@@ -552,27 +543,9 @@ struct SudokuView {
     this.undid = true
   }
 
-  // 提示次数
-  clickHintButton() {
-    LogUtil.debug("click hint")
-    if (this.hintCount <= 0) {
-      promptAction.showToast({
-        message: $r('app.string.hint_count_no_enough'),
-        duration: 2000
-      });
-    } else {
-      this.hintClicked = true
-      this.hintCount--
-      this.curLevelInfo.hintCount = this.hintCount
-      this.savaGameData()
-    }
-  }
-
   // 笔记
   clickEditButton() {
-    LogUtil.debug("click edit " + this.editOn)
     this.editOn = !this.editOn
-    LogUtil.debug("click edit2 " + this.editOn)
     this.editBadgeOn = !this.editBadgeOn
     this.editBadgeColor = this.editBadgeOn ? $r('app.color.operate_edit_on') : $r('app.color.operate_edit_off')
   }
@@ -599,7 +572,6 @@ struct SudokuView {
 
   updateValue() {
     console.log("收到子view 更新 inputValue", this.inputValue)
-    // this.inputValue = value
   }
 
   /**
@@ -620,15 +592,8 @@ struct SudokuView {
     return formatTime
   }
 
-  undoCallback(changedPropertyName: string) {
-    LogUtil.debug("undoCallBack this.undid : " + this.undid)
-  }
 
-  eraseCallback(changedPropertyName: string) {
-    LogUtil.debug("eraseCallback this.erased : " + this.erased)
-  }
-
-  listenerError(changedPropertyName: string) {
+  listenerError() {
     LogUtil.debug("输入错误的值 gotError : " + this.gotError)
     if (this.gotError) {
       for (let i = this.hpStates.length - 1; i >=0; i --) {
@@ -656,7 +621,7 @@ struct SudokuView {
     for (let index = 0; index < this.values.length; index++) {
       this.valueCountMap.set(this.values[index], 16)
     }
-    this.cells.forEach((cell: Cell, key: number) => {
+    this.cells.forEach((cell: Cell) => {
       let value = cell._value
       if (value != "Z") {
         this.remainCount[parseInt(value, 16)]--
@@ -669,7 +634,7 @@ struct SudokuView {
     this.cells = DataUtil.jsonString2Map<number, Cell>(mapString)
   }
 
-  listenerCorrect(changedPropertyName: string) {
+  listenerCorrect() {
     LogUtil.debug("listenerCorrect this.gotCorrectValue : " + this.gotCorrectValue)
     let gameOverSuc:boolean = true
     if (this.gotCorrectValue != "Z") {
@@ -681,8 +646,6 @@ struct SudokuView {
       let count = this.remainCount[index];
       if (count > 0) {
         gameOverSuc = false
-        // 说明游戏未结束，直接返回
-        // this.curLevelInfo.data =
         return
       }
     }
@@ -695,7 +658,7 @@ struct SudokuView {
 
   }
 
-  gameDataChange(changedPropertyName: string) {
+  gameDataChange() {
     LogUtil.debug("gameDataChange")
     let data = DataUtil.map2JsonString(this.cells)
     this.curLevelInfo.data = data
@@ -734,9 +697,6 @@ struct SudokuView {
     })
   })
 
-  listenerRestart(changedPropertyName: string) {
-    LogUtil.debug("listenerRestart " + this.restarted)
-  }
 }
 
 

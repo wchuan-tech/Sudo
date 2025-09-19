@@ -25,20 +25,17 @@ export default class EntryAbility extends UIAbility {
 
   currentMode?: ConfigurationConstant.ColorMode = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT
 
-  // private darkModeListener: mediaquery.MediaQueryListener = mediaquery.matchMediaSync(BreakpointConstants.DARK_MODE);
-  private darkModeListener: mediaquery.MediaQueryListener = mediaquery.matchMediaSync('(dark-mode: true)');
+  sudokuDb: string = DB_CONFIG.DB_NAME // 数据库名称
 
-  async onCreate(want: Want, launchParam: AbilityConstant.LaunchParam) {
+  async onCreate() {
 
     GlobalContext.setContext(this.context);
 
     try {
-      // 调用我们 RdbHelper 的总开关，并等待它完成
       await this.initDataBase();
       LogUtil.info('Database has been successfully initialized in EntryAbility.');
     } catch (error) {
       LogUtil.error('FATAL: Database initialization failed in EntryAbility.', error);
-      // 在生产环境中，这里可能需要记录严重错误或向用户显示一个无法继续的提示
     }
 
 
@@ -52,19 +49,21 @@ export default class EntryAbility extends UIAbility {
   }
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
-    // Main window is created, set main page for this ability
+
     AppUtil.init(this.context, windowStage)
 
     LogUtil.debug("onWindowStageCreate")
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
     LogUtil.debug("StageCreate this.context.config.colorMode = " + this.context.config.colorMode)
+
     this.currentMode = this.context.config.colorMode
     AppStorage.setOrCreate(CommonConstants.ColorMode, this.context.config.colorMode);
     PreferencesUtil.init(CommonConstants.PreferenceName)
+
     this.followSystemMode = PreferencesUtil.getBooleanSync(CommonConstants.FollowSystem)
     LogUtil.debug("followSystemMode = " + this.followSystemMode)
+
     if (!this.followSystemMode) {
-      this.useDayMode = PreferencesUtil.getBooleanSync(CommonConstants.UseDarkMode)
       let mode: ConfigurationConstant.ColorMode = this.useDayMode ? ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT : ConfigurationConstant.ColorMode.COLOR_MODE_DARK
       this.context.getApplicationContext().setColorMode(mode)
     }
@@ -81,23 +80,16 @@ export default class EntryAbility extends UIAbility {
   }
 
   onWindowStageDestroy(): void {
-    // Main window is destroyed, release UI related resources
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageDestroy');
   }
 
   onForeground(): void {
-    // Ability has brought to foreground
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onForeground');
   }
 
   onBackground(): void {
-    // Ability has back to background
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onBackground');
   }
-
-  sudokuDb: string = DB_CONFIG.DB_NAME // 数据库名称
-  Level: string = TBL_LEVEL.NAME // 表名
-
 
   async initDataBase(): Promise<void> {
 
@@ -116,19 +108,18 @@ export default class EntryAbility extends UIAbility {
    */
   envCallback: EnvironmentCallback = {
     onConfigurationUpdated(config) {
+
       LogUtil.info(`envCallback onConfigurationUpdated success: ${JSON.stringify(config)}`);
       let mode = config.colorMode;
       LogUtil.debug('envCallback onConfigurationUpdated mode = ' + config.colorMode)
+
       if (mode == ConfigurationConstant.ColorMode.COLOR_MODE_DARK) {
-        // emitter.emit("colorModeChange")//发送消息模式改变
         //深色模式
         LogUtil.debug("深色模式")
-        // getContext(this).getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_DARK)
-      } else if (mode == ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT) {
+        } else if (mode == ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT) {
         //浅色模式
         LogUtil.debug("浅色模式")
-        // getContext(this).getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT)
-      }
+        }
       emitter.on("colorModeChange", () => {
         let followSystem: boolean = PreferencesUtil.getBooleanSync(CommonConstants.FollowSystem)
         LogUtil.debug("emitter change this.followSystemMode " + followSystem)

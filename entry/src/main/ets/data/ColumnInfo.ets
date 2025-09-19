@@ -1,6 +1,5 @@
 /**
  * Column Info.
- *
  */
 export default class ColumnInfo {
   name: string;
