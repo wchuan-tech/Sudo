@@ -28,32 +28,17 @@ export function OnlineGamePageBuilder() {
 struct OnlineGamePage {
 
   @State
-  @Watch("listenerError")
   gotError: boolean = false
 
   @State
-  @Watch("updateValue")
-  // 传递值到子组件BoardView中
-  inputValue: string = "Z";
-
-  @State
-  @Watch("listenerRestart")
   restarted: boolean = false
 
   @State
-  @Watch("undoCallback")
   undid:boolean = false
 
   @State
   editOn: boolean = false
 
-  @State
-  @Watch("listenerCorrect")
-  gotCorrectValue: string = "Z"
-
-  @State
-  // @Watch("eraseCallback")
-  erased:boolean = false
 
   @Consume('navPathStack')
   pathStack: NavPathStack
@@ -109,6 +94,56 @@ struct OnlineGamePage {
   @State private selectedCell: CellPosition | null = null;
 
   @State private finalBestTimeMessage: string = "正在计算...";
+
+  onInit(context: NavDestinationContext)
+  {
+    const params = context.pathStack.getParamByName('OnlineGamePage')[0] as SudokuData;
+
+    if (params && params.puzzle) {
+      LogUtil.debug("OnlineGamePage: onInit received params successfully.");
+      // 直接使用 API 数据，只需深拷贝
+      this.puzzle = params.puzzle;
+      this.solution = params.solution;
+      this.difficulty = params.difficulty;
+
+      this.playerBoard = JSON.parse(JSON.stringify(params.puzzle));
+      this.errorBoard = Array(9).fill(0).map(() => Array(9).fill(false));
+
+      // 【新增】初始化一个空的 9x9xN 的笔记数组
+      this.notes = Array(9).fill(0).map(() => Array(9).fill(0).map(() => []));
+
+      // 【新增】每次新游戏开始时，清空历史记录
+      this.historyStack = [];
+
+      this.startTimer();
+    } else {
+      LogUtil.error("OnlineGamePage: Failed to get params in onInit.");
+      promptAction.showToast({ message: "错误：无法加载谜题数据。" });
+      setTimeout(() => { this.pathStack.pop(); }, 1500);
+    }
+  }
+
+  // 回到主页
+  gameOverSucDialog: CustomDialogController = new CustomDialogController({
+    builder: AlertDialog({
+      primaryTitle: $r('app.string.game_over_title'),
+      content: $r('app.string.game_over_suc'),
+      primaryButton: {
+        value: $r('app.string.game_over_return_home'),
+        action: () => {
+          // 返回主页
+          // this.savaGameData()
+          this.backToMainView()
+        },
+      },
+    })
+  })
+
+  backToMainView() {
+    // this.pathStack.popToName("Main", true)
+    LogUtil.debug("backToMainView")
+    this.pathStack.pop(this.curLevelInfo, true)
+  }
 
   build() {
     NavDestination(){
@@ -546,55 +581,7 @@ struct OnlineGamePage {
     .width('80%')
   }
 
-  onInit(context: NavDestinationContext)
-  {
-    const params = context.pathStack.getParamByName('OnlineGamePage')[0] as SudokuData;
 
-    if (params && params.puzzle) {
-      LogUtil.debug("OnlineGamePage: onInit received params successfully.");
-      // 直接使用 API 数据，只需深拷贝
-      this.puzzle = params.puzzle;
-      this.solution = params.solution;
-      this.difficulty = params.difficulty;
-
-      this.playerBoard = JSON.parse(JSON.stringify(params.puzzle));
-      this.errorBoard = Array(9).fill(0).map(() => Array(9).fill(false));
-
-      // 【新增】初始化一个空的 9x9xN 的笔记数组
-      this.notes = Array(9).fill(0).map(() => Array(9).fill(0).map(() => []));
-
-      // 【新增】每次新游戏开始时，清空历史记录
-      this.historyStack = [];
-
-      this.startTimer();
-    } else {
-      LogUtil.error("OnlineGamePage: Failed to get params in onInit.");
-      promptAction.showToast({ message: "错误：无法加载谜题数据。" });
-      setTimeout(() => { this.pathStack.pop(); }, 1500);
-    }
-  }
-
-  // 回到主页
-  gameOverSucDialog: CustomDialogController = new CustomDialogController({
-    builder: AlertDialog({
-      primaryTitle: $r('app.string.game_over_title'),
-      content: $r('app.string.game_over_suc'),
-      primaryButton: {
-        value: $r('app.string.game_over_return_home'),
-        action: () => {
-          // 返回主页
-          // this.savaGameData()
-          this.backToMainView()
-        },
-      },
-    })
-  })
-
-  backToMainView() {
-    // this.pathStack.popToName("Main", true)
-    LogUtil.debug("backToMainView")
-    this.pathStack.pop(this.curLevelInfo, true)
-  }
 
 
   // 【新增方法 1】检查数独是否已正确完成
@@ -610,20 +597,16 @@ struct OnlineGamePage {
     return true; // 所有格子都已填对
   }
 
-  // 1. 【修改】重构 gameOverSucDialog，使其能够显示动态内容
-  //    我们不再将它定义为类属性，而是在需要时动态创建
   private showGameOverDialog() {
-    // 2. 【核心】使用 promptAction.showToast
     promptAction.showToast({
-      // 3. 将我们准备好的动态消息作为 message
       message: this.finalBestTimeMessage,
-      // 4. 设置一个较长的持续时间，以便用户能看清多行信息
+      duration: 3500
     })
 
-    // 5. Toast 显示后，可以延迟一小段时间再返回主菜单
+    // 延迟一小段时间返回主菜单
     setTimeout(() => {
       this.backToMainView();
-    }, 3500); // 3.5秒后返回 (与 LONG duration 匹配)
+    }, 3500);
   }
 
   private async checkWinAndSaveRecord() {
@@ -678,32 +661,5 @@ struct OnlineGamePage {
     this.showGameOverDialog();
   }
 
-  savaGameData() {
-    this.curLevelInfo.cumulativeTime = this.cumulativeTime
-    LogUtil.debug("savaGameData time : " + this.curLevelInfo.cumulativeTime)
-    LevelInfoApi.updateData(this.curLevelInfo, (result: number) => {
-      LogUtil.debug("saveGameData callback result : " + result)
-    })
-    LevelInfoApi.query(this.curLevelInfo.difficulty, this.curLevelInfo.level, (result: LevelInfo, count: number) => {
-      LogUtil.debug("saveGameData query number : " + count + " cumulativeTime = " + result.cumulativeTime)
-    })
-  }
 
-  undoCallback(changedPropertyName: string) {
-  }
-
-  gameDataChange(changedPropertyName: string) {
-  }
-
-  listenerError(changedPropertyName: string) {
-  }
-
-  updateValue(changedPropertyName: string) {
-  }
-
-  listenerCorrect(changedPropertyName: string) {
-  }
-
-  listenerRestart(changedPropertyName: string) {
-  }
 }

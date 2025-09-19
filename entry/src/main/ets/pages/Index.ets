@@ -335,7 +335,7 @@ struct Index {
   }
 
   // =================================================================
-  // 这个方法职责很清晰：触发网络请求。
+  // 网络请求。
   // =================================================================
   @Builder
   onlineModeItem() {
@@ -347,7 +347,7 @@ struct Index {
         .fontColor($r('app.color.item_name_color'))
       Blank()
 
-      // 【新增】显示剩余次数的文本
+      // 显示剩余次数的文本
       Text(`剩余: ${this.gameViewModel.remainingApiCall}`)
         .fontSize(12)
         .fontColor($r('app.color.api_service_count'))
@@ -385,16 +385,13 @@ struct Index {
           solution: puzzleData.solution,
           difficulty: this.gameViewModel.selectedDifficulty
         };
-        // =======================================================
-        // ↓↓↓↓↓↓     核心修改：使用带回调的 pushPathByName      ↓↓↓↓↓↓
-        // =======================================================
         this.pathStack.pushPathByName(
           "OnlineGamePage", // 目标页面
           params, // 传递的参数
           () => { // onPop 回调函数
             LogUtil.debug("Popped back from OnlineGamePage.");
-            // 在这里可以执行任何您需要的操作，比如刷新主页数据、显示提示等。
-            // 例如，我们可以清空 ViewModel 中的数据，以便下次重新获取
+            // 执行需要的操作，比如刷新主页数据、显示提示等。
+            // 清空 ViewModel 中的数据，以便下次重新获取
             this.gameViewModel.juhePuzzle = null;
             promptAction.showToast({ message: "欢迎回来！" });
           }
